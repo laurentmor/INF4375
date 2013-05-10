@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <script type="text/javascript">
+            function executer() {
+                document.getElementById('title').innerHTML = 'Labo 01';
+            }
+
+            function remplir() {
+                for(var i = -25; i < 25; i++) {
+                    if(i > 0) {
+                        document.getElementsByTagName('div')[0].innerHTML += i + "<br />";
+                    } else {
+                        document.getElementsByTagName('div')[0].innerHTML += "<span style='color:#FF0000;'>" + i + "</span><br />";
+                    }
+
+                }
+                document.getElementsByTagName('div')[0].style.display = 'block';
+            }
+
+         </script>
+    </head>
+    <body onload="executer()">
+        <h1 id="title"></h1>
+        <input type="button" onclick="remplir();" value="Remplir le tableau" />
+
+        <div style="display:none;" />
+    </body>
+</html>
