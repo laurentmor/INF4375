@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<livres>
+    <livre>
+        <nom>Le Guide du voyageur galactique</nom>
+        <auteur>Adam Douglas</auteur>
+        <prix>9.99$</prix>
+    </livre>
+    <livre>
+        <nom>Les lauriers de César</nom>
+        <auteur>René Goscinny</auteur>
+        <auteur>Albert Uderzo</auteur>
+        <prix>19.99$</prix>
+    </livre>
+    <livre>
+        <nom>Pyongyang</nom>
+        <auteur>Guy Delisle</auteur>
+        <prix>39.95$</prix>
+    </livre>
+</livres>
