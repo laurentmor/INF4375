@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <bieres>
     <compagnie>
-        <name>Unibroue</name>
+        <nom>Unibroue</nom>
         <logo>http://www.bieropholie.com/formulaires/Yowie/images/Logo%20Unibroue.jpg</logo>
         <biere>Fin du monde</biere>
         <biere>Maudite</biere>
         <biere>Blanche de Chambly</biere>
     </compagnie>
     <compagnie>
-        <name>La Barberie</name>
+        <nom>La Barberie</nom>
         <biere>Blonde biologique</biere>
         <biere>Rousse Bitter</biere>
         <logo>http://www.brewers.ca/userfiles/image/logos/La%20Barberie.jpg</logo>
