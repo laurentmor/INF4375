@@ -1,0 +1,17 @@
+[
+    {
+        "nom": "Le Guide du voyageur galactique",
+        "auteur": "Adam Douglas",
+        "prix": 9.99
+    },
+    {
+        "nom": "Les lauriers de César",
+        "auteur": ["René Goscinny", "Albert Uderzo"],
+        "prix": 19.99
+    },
+    {
+        "nom": "Pyongyang",
+        "auteur": "Guy Delisle",
+        "prix": 39.95
+    }
+]

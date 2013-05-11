@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <script type="text/javascript">
+            function executer() {
+                document.getElementById('title').innerHTML = 'Labo 01';
+            }
+
+            function remplir() {
+                for(var i = -25; i < 25; i++) {
+                    if(i > 0) {
+                        document.getElementsByTagName('div')[0].innerHTML += i + "<br />";
+                    } else {
+                        document.getElementsByTagName('div')[0].innerHTML += "<span style='color:#FF0000;'>" + i + "</span><br />";
+                    }
+
+                }
+                document.getElementsByTagName('div')[0].style.display = 'block';
+            }
+
+            function remplir_avec_valeurs(valeurs) {
+                var list_valeurs = valeurs.split(';');
+                /*
+                   Si valeurs = '123;435', list_valeurs = ['123', '435']
+                   donc une liste de 2 élèments.
+                  */
+                if(list_valeurs.length != 2) {
+                    throw "Format non valide";
+                }
+
+                var debut = parseInt(list_valeurs[0]);
+                var fin = parseInt(list_valeurs[1]);
+
+                for(var i = debut; i < fin; i++) {
+                    if(i > 0) {
+                        document.getElementsByTagName('div')[0].innerHTML += i + "<br />";
+                    } else {
+                        document.getElementsByTagName('div')[0].innerHTML += "<span style='color:#FF0000;'>" + i + "</span><br />";
+                    }
+                }
+                document.getElementsByTagName('div')[0].style.display = 'block';
+            }
+
+         </script>
+    </head>
+    <body onload="executer()">
+        <h1 id="title"></h1>
+        <input type="button" onclick="remplir();" value="Remplir le tableau" />
+        
+        <p>
+            <input type="text" id="valeurs" /><input type="button" onclick="remplir_avec_valeurs(document.getElementById('valeurs').value);" value="Remplir avec les valeurs" />
+        </p>
+
+        <div style="display:none;" />
+
+    </body>
+</html>
