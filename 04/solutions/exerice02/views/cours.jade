@@ -1,0 +1,27 @@
+extends layout
+
+block content
+    h1
+        a(href=url)=nom
+    p
+        strong Sigle
+        | : #{sigle}
+        br
+
+        strong Offert
+        | : 
+        - if(offert)
+            | Oui
+        - else
+            | Non 
+        br
+
+        strong Pré-requis
+        | : 
+        - for(var i = 0; i < prerequis.length; i++)
+            | #{prerequis[i]}
+            - if(i != prerequis.length - 1)
+                | , 
+        - if(prerequis.length == 0)
+            | Aucun
+        br

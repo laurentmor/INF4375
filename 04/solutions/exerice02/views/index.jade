@@ -1,0 +1,7 @@
+extends layout
+
+block content
+    ul
+        - each info, sigle in cours
+            li
+                a(href='/'+sigle, style=(info.offert == false ? "text-decoration: line-through;color:red" : undefined))= info.nom

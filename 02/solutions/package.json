@@ -1,0 +1,10 @@
+{
+  "name": "inf4375-2013e-labo02-exercice05",
+  "description": "Exercice 05 du labo 02 de INF4375 pour la session d'été 2013",
+  "author": "jpcaissy+inf4375@piji.ca",
+  "version": "0.0.1",
+  "dependencies": {
+    "xmldom": "= 0.1.16"
+  },
+  "engine": "node >= 0.10"
+}

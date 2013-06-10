@@ -6,12 +6,55 @@
             /*
              Mettre le code javascript ici
              */
-         </script>
-    </head>
-    <body>
-        <h1 id="title"></h1>
-        <input type="button" value="Remplir le tableau" />
+            function addTitre() {
+                document.getElementById("title").innerHTML = "Un titre";
+            }
+            function showRange(debut,fin) {
+                var text = "";
+                targetDiv = document.getElementsByTagName("div")[0];
+                for (var i = debut; i <= fin; i++) {
+                    if (i < 0) {
+                        text += "<span style='color:#FF0000;'> " + i;
+                    }
+                    else {
+                        text += "<span> " + i;
+                    }
+                    text += "</span><br/>";
 
+                }
+                targetDiv.innerHTML = text;
+                targetDiv.style.display = "block";
+
+            }
+
+            function addField() {
+                var childContent = "<input type='text' name='I1'/><input type='button' value='Remplir le tableau version 2'/>";
+                document.body.appendChild(childContent);
+
+            }
+            function runLoadTasks(){
+                addTitre();
+                
+            }
+            function remplir(){
+              
+                var vals=document.getElementById("valeurs").value.split(";");
+                if(vals.length!==2)throw "Format invalide!";
+                else showRange(parseInt(vals[0]),parseInt(vals[1]));
+            }
+            function effacer(){
+                targetDiv.innerHTML="";
+            }
+            
+        </script>
+    </head>
+    <body onload="runLoadTasks();" >
+        <h1 id="title"></h1>
+        <input type="button" value="Remplir le tableau" onclick="showRange(-25,25);" />
+        <input type="text" id="valeurs" /><input type="button" 
+                                                 value="Remplir le tableau 2" 
+                                                 onclick="remplir();" />
+        <a href="#" onclick="setTimeout(effacer(),1000);">Effacer</a>
         <div style="display:none;" />
     </body>
 </html>

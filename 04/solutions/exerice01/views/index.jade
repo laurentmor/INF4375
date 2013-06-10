@@ -1,0 +1,10 @@
+extends layout
+
+block javascript
+    script(src='/javascripts/main.js', type='text/javascript')
+
+block content
+    input(type="button", id="input-date", value="Récupérer la date")
+    br
+    input(type="button", id="input-heure", value="Récupérer l'heure")
+    div(id="info")
