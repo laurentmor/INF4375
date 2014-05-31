@@ -1,2 +1,4 @@
 *.swp
 /nbproject
+/migration/nbproject/private/
+/migration/*.pdf
