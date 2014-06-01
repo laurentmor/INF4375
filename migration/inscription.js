@@ -24,7 +24,9 @@
 
 var fs = require("fs");
 var xmldom = require("xmldom");
+var xjs = require("xml2js");
 //TODO add more requires when needed
+
 var DEFAULT_DOSSIERS_XML = "dossiers.xml";
 var DEFAULT_INSCRIPTIONS_XML = "inscriptions.xml";
 var DEFAULT_DB_NAME = "MORL05058301";
@@ -82,20 +84,83 @@ function chargerInscriptions() {
                 construireCollectionDossiers();
 
 
+
             }
         }
     });
 }
-function construireCollectionDossiers(){
-    console.log(etudiants.length)
-    for(var i=0;i<etudiants.length;i++)
-        var etudiantCourant=etudiants[i];
-        aff(etudiantCourant);
-  
+function construireCollectionDossiers() {
+
+    console.log("INFO construction de la collection Dossiers");
+    for (var i = 0; i < etudiants.length; i++) {
+        var etudiantCourant = etudiants[i];
+        construireEtudiantJson(etudiantCourant);
+    }
+
+
+
 }
-function aff(etd){
-    
-    console.log(etd.getElementsByTagName("codePermanent")[0].textContent);
+function construireEtudiantJson(e) {
+
+    var nomEtd = e.getElementsByTagName("nom")[0].textContent;
+    var prenomEtd = e.getElementsByTagName("prenom")[0].textContent;
+    var codeEtd = e.getElementsByTagName("codePermanent")[0].textContent;
+    var sexeEtd = e.getElementsByTagName("sexe")[0].textContent;
+    var dateEtd = e.getElementsByTagName("dateNaissance")[0].textContent;
+    var listeDesCoursEtd = [];
+     var listeCoursReussisEtd = [];
+    for (var i = 0; i < inscriptions.length; i++) {
+        var inscriptionCourante = inscriptions[i];
+        var codePermCourant = inscriptionCourante.getElementsByTagName("etudiant")[0].textContent;
+       
+        if (codePermCourant === codeEtd) {
+            var sigleCours = inscriptionCourante.
+                    getElementsByTagName("sigle")[0].textContent;
+            var groupeCours = inscriptionCourante.
+                    getElementsByTagName("groupe")[0].textContent;
+            var sessionCours = inscriptionCourante.
+                    getElementsByTagName("session")[0].textContent;
+            var noteCours = inscriptionCourante.
+                    getElementsByTagName("noteFinale")[0].textContent;
+            var leCours = {
+                sigle: sigleCours,
+                groupe: groupeCours,
+                session: sessionCours,
+                noteFinale: noteCours
+            };
+
+            var leCoursJson = JSON.stringify(leCours);
+            listeDesCoursEtd.push(leCoursJson);
+            if (leCours.noteFinale > 60) {
+                var reussi = {
+                    sigle: leCours.sigle,
+                    session: leCours.session,
+                    noteFinale: leCours.noteFinale
+                };
+                 listeCoursReussisEtd.push(reussi);
+                
+            }
+           
+               
+
+
+       }
+       
+        
+           
+
+    }
+    var etudiantCourant={
+           nom:nomEtd,
+           prenom:prenomEtd,
+           codePermanent:codeEtd,
+           sexe:sexeEtd,
+           dateNaissance:dateEtd,
+           listeCours:listeDesCoursEtd,
+           listeCoursReussis:listeCoursReussisEtd
+       };
+
+   console.log(etudiantCourant);
 }
 
 
