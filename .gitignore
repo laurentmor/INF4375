@@ -3,3 +3,6 @@
 /migration/nbproject/private/
 /migration/*.pdf
 /migration/nbproject
+/migration/node_modules
+/*.pdf
+/tp1

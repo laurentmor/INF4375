@@ -25,6 +25,8 @@
 var fs = require("fs");
 var xmldom = require("xmldom");
 var xjs = require("xml2js");
+var mongo = require("mongodb");
+
 //TODO add more requires when needed
 
 var DEFAULT_DOSSIERS_XML = "dossiers.xml";
@@ -32,19 +34,14 @@ var DEFAULT_INSCRIPTIONS_XML = "inscriptions.xml";
 var DEFAULT_DB_NAME = "MORL05058301";
 var DEFAULT_DOSSIERS_COLLECTION_NAME = "dossiers";
 var DEFAULT_GC_COLLECTION_NAME = "groupesCours";
+var DEFAULT_SERVER_HOST = "localhost";
+var DEFAULT_PORT = 27017;
 
 var etudiants;
 var inscriptions;
-var dossiers;
+var dossiers = [];
 
-var assertFileExists = function(aFile) {
-    var fStr = aFile.toString();
-    if (!fs.existsSync(fStr)) {
-        console.log("%s does not exist. Exiting.", fStr);
-        process.exit(1); // http://nodejs.org/api/process.html#process_process_exit_code
-    }
-    return fStr;
-};
+
 // Lecture du fichier XML en mémoire.
 fs.readFile(DEFAULT_DOSSIERS_XML, function(err, data) {
     if (err) {
@@ -58,7 +55,7 @@ fs.readFile(DEFAULT_DOSSIERS_XML, function(err, data) {
             console.log("La liste ne contient aucun etudiant.");
             process.exit(1);
         } else {
-            console.log("INFO: chargement de la liste des étudiants terminée");
+            //console.log("INFO: chargement de la liste des étudiants terminée");
             etudiants = etudiantsList;
             chargerInscriptions();
 
@@ -79,7 +76,7 @@ function chargerInscriptions() {
                 console.log("La liste ne contient aucune inscription");
                 process.exit(1);
             } else {
-                console.log("INFO: chargement de la liste des incriptions terminée");
+                //console.log("INFO: chargement de la liste des incriptions terminée");
                 inscriptions = inscriptionsList;
                 construireCollectionDossiers();
 
@@ -91,13 +88,51 @@ function chargerInscriptions() {
 }
 function construireCollectionDossiers() {
 
-    console.log("INFO construction de la collection Dossiers");
-    for (var i = 0; i < etudiants.length; i++) {
-        var etudiantCourant = etudiants[i];
-        construireEtudiantJson(etudiantCourant);
+    //console.log("INFO construction de la collection Dossiers");
+
+
+
+var server = new mongo.Server(DEFAULT_SERVER_HOST, DEFAULT_PORT);
+var db = new mongo.Db(DEFAULT_DB_NAME, server, {safe: true});
+db.open(function(err, db) {
+
+    if (err) {
+        console.log(err);
     }
+    else
+        db.collection(DEFAULT_DOSSIERS_COLLECTION_NAME, function(err, collection) {
 
+            if (err) {
+                console.log(err);
+            }
+            else{
+                for (var i = 0; i < etudiants.length; i++) {
+                    var etudiant = etudiants[i];
+                    var e = construireEtudiantJson(etudiant);
 
+                    collection.insert(e, function(err, result) {
+                        if (err) {
+                            console.log("AAAAA"+err);
+                        }
+                       console.log(result);
+                    });
+                }
+                 collection.find().toArray(function (err, data) {
+          for (var i = 0; i < data.length; i++) {
+            var d = data[i];
+            console.log(d.nom);
+          }
+
+          // On ferme la connexion à la base de données.
+          db.close();
+        });
+           // db.close();
+            }
+        });
+   
+
+});
+ 
 
 }
 function construireEtudiantJson(e) {
@@ -108,11 +143,11 @@ function construireEtudiantJson(e) {
     var sexeEtd = e.getElementsByTagName("sexe")[0].textContent;
     var dateEtd = e.getElementsByTagName("dateNaissance")[0].textContent;
     var listeDesCoursEtd = [];
-     var listeCoursReussisEtd = [];
+    var listeCoursReussisEtd = [];
     for (var i = 0; i < inscriptions.length; i++) {
         var inscriptionCourante = inscriptions[i];
         var codePermCourant = inscriptionCourante.getElementsByTagName("etudiant")[0].textContent;
-       
+
         if (codePermCourant === codeEtd) {
             var sigleCours = inscriptionCourante.
                     getElementsByTagName("sigle")[0].textContent;
@@ -129,40 +164,36 @@ function construireEtudiantJson(e) {
                 noteFinale: noteCours
             };
 
-            var leCoursJson = JSON.stringify(leCours);
-            listeDesCoursEtd.push(leCoursJson);
+
+            listeDesCoursEtd.push(leCours);
             if (leCours.noteFinale > 60) {
-                var reussi = {
-                    sigle: leCours.sigle,
-                    session: leCours.session,
-                    noteFinale: leCours.noteFinale
-                };
-                 listeCoursReussisEtd.push(reussi);
-                
+
+                listeCoursReussisEtd.push(leCours.sigle);
+
             }
-           
-               
 
 
-       }
-       
-        
-           
+
+
+        }
+
+
+
 
     }
-    var etudiantCourant={
-           nom:nomEtd,
-           prenom:prenomEtd,
-           codePermanent:codeEtd,
-           sexe:sexeEtd,
-           dateNaissance:dateEtd,
-           listeCours:listeDesCoursEtd,
-           listeCoursReussis:listeCoursReussisEtd
-       };
+    var etudiantCourant = {
+        nom: nomEtd,
+        prenom: prenomEtd,
+        codePermanent: codeEtd,
+        sexe: sexeEtd,
+        dateNaissance: dateEtd,
+        listeCours: listeDesCoursEtd,
+        listeCoursReussis: listeCoursReussisEtd
+    };
 
-   console.log(etudiantCourant);
+    return etudiantCourant;
+
 }
-
 
 
 
