@@ -36,7 +36,8 @@ var DEFAULT_DOSSIERS_COLLECTION_NAME = "dossiers";
 var DEFAULT_GC_COLLECTION_NAME = "groupesCours";
 var DEFAULT_SERVER_HOST = "localhost";
 var DEFAULT_PORT = 27017;
-
+var server;
+var db;
 var etudiants;
 var inscriptions;
 var dossiers = [];
@@ -68,17 +69,17 @@ function chargerInscriptions() {
         if (err) {
             console.log("Error reading XML document");
         } else {
-            // Le fichier XML est retourné sous forme d'un buffer. Nous devons le
-            // transgormer en chaîne de caractères avant de l'envoyer au parser DOM.
+
             var domRoot = new xmldom.DOMParser().parseFromString(data.toString());
             var inscriptionsList = domRoot.getElementsByTagName("inscription");
             if (!inscriptionsList.length) {
                 console.log("La liste ne contient aucune inscription");
                 process.exit(1);
             } else {
-                //console.log("INFO: chargement de la liste des incriptions terminée");
+                console.log("INFO: chargement de la liste des incriptions terminée");
                 inscriptions = inscriptionsList;
-                construireCollectionDossiers();
+                //construireCollectionDossiers();
+                construireCollectionGC();
 
 
 
@@ -88,80 +89,68 @@ function chargerInscriptions() {
 }
 function construireCollectionDossiers() {
 
-    //console.log("INFO construction de la collection Dossiers");
+    console.log("INFO construction de la collection Dossiers");
 
 
 
-var server = new mongo.Server(DEFAULT_SERVER_HOST, DEFAULT_PORT);
-var db = new mongo.Db(DEFAULT_DB_NAME, server, {safe: true});
-db.open(function(err, db) {
+    server = new mongo.Server(DEFAULT_SERVER_HOST, DEFAULT_PORT);
+    db = new mongo.Db(DEFAULT_DB_NAME, server, {safe: true});
+    db.open(function(err, db) {
 
-    if (err) {
-        console.log(err);
-    }
-    else
-        db.collection(DEFAULT_DOSSIERS_COLLECTION_NAME, function(err, collection) {
+        if (err) {
+            console.log(err);
+        }
+        else
+            db.collection(DEFAULT_DOSSIERS_COLLECTION_NAME, function(err, collection) {
 
-            if (err) {
-                console.log(err);
-            }
-            else{
-                for (var i = 0; i < etudiants.length; i++) {
-                    var etudiant = etudiants[i];
-                    var e = construireEtudiantJson(etudiant);
-
-                    collection.insert(e, function(err, result) {
-                        if (err) {
-                            console.log("AAAAA"+err);
-                        }
-                       console.log(result);
-                    });
+                if (err) {
+                    console.log(err);
                 }
-                 collection.find().toArray(function (err, data) {
-          for (var i = 0; i < data.length; i++) {
-            var d = data[i];
-            console.log(d.nom);
-          }
+                else {
+                    for (var i = 0; i < etudiants.length; i++) {
+                        var etudiant = etudiants[i];
+                        var e = construireEtudiantJson(etudiant);
 
-          // On ferme la connexion à la base de données.
-          db.close();
-        });
-           // db.close();
-            }
-        });
-   
+                        collection.insert(e, function(err, result) {
+                            if (err) {
+                                console.log(err);
+                            }
 
-});
- 
+                        });
+                    }
+                    db.close();
+
+                }
+            });
+
+
+    });
+
 
 }
 function construireEtudiantJson(e) {
 
-    var nomEtd = e.getElementsByTagName("nom")[0].textContent;
-    var prenomEtd = e.getElementsByTagName("prenom")[0].textContent;
-    var codeEtd = e.getElementsByTagName("codePermanent")[0].textContent;
-    var sexeEtd = e.getElementsByTagName("sexe")[0].textContent;
-    var dateEtd = e.getElementsByTagName("dateNaissance")[0].textContent;
+    var nomEtd = getContenuTexteXml(e, "nom");
+    var prenomEtd = getContenuTexteXml(e, "prenom");
+    var codeEtd = getContenuTexteXml(e, "codePermanent");
+    var sexeEtd = getContenuTexteXml(e, "sexe");
+    var dateEtd = getContenuTexteXml(e, "dateNaissance");
     var listeDesCoursEtd = [];
     var listeCoursReussisEtd = [];
     for (var i = 0; i < inscriptions.length; i++) {
         var inscriptionCourante = inscriptions[i];
-        var codePermCourant = inscriptionCourante.getElementsByTagName("etudiant")[0].textContent;
+        var codePermCourant = getContenuTexteXml(inscriptionCourante, "etudiant");
 
         if (codePermCourant === codeEtd) {
-            var sigleCours = inscriptionCourante.
-                    getElementsByTagName("sigle")[0].textContent;
-            var groupeCours = inscriptionCourante.
-                    getElementsByTagName("groupe")[0].textContent;
-            var sessionCours = inscriptionCourante.
-                    getElementsByTagName("session")[0].textContent;
-            var noteCours = inscriptionCourante.
-                    getElementsByTagName("noteFinale")[0].textContent;
+            var sigleCours = getContenuTexteXml(inscriptionCourante, "sigle");
+            var groupeCours = getContenuTexteXml(inscriptionCourante, "groupe");
+            var sessionCours = getContenuTexteXml(inscriptionCourante, "session");
+            var noteCours = getContenuTexteXml(inscriptionCourante, "noteFinale");
             var leCours = {
                 sigle: sigleCours,
                 groupe: groupeCours,
                 session: sessionCours,
-                noteFinale: noteCours
+                noteFinale: parseInt(noteCours)
             };
 
 
@@ -195,7 +184,132 @@ function construireEtudiantJson(e) {
 
 }
 
+function construireCollectionGC() {
+    //Stratégie: une map à clé unique sigle cours, groupe et session concaténés
+    // chaque valeur est un tableau de  cases contenant:
+    //  la session,le sigle,le groupe puis un tableau de quartet cp, nom,prenom et note
+    var groupesCoursMap = [];
+    var listeEtd;
+    for (var i = 0; i < inscriptions.length; i++) {
+        //Construisons d'abord la clé pour l'inscription courante
+        var inscriptionCourante = inscriptions[i];
+        var cleGC = genererCle(inscriptionCourante);
+        var sigleCours = getContenuTexteXml(inscriptionCourante, "sigle");
+        var groupeCours = getContenuTexteXml(inscriptionCourante, "groupe");
+        var sessionCours = getContenuTexteXml(inscriptionCourante, "session");
+        var noteFinale = getContenuTexteXml(inscriptionCourante, "noteFinale");
+        var codePermanent = getContenuTexteXml(inscriptionCourante, "etudiant");
+        var tabNomPrenom = getNomPrenomEtudiant(codePermanent);
 
+   
+        if (!(cleGC in groupesCoursMap)) {
+
+            listeEtd = new Array();
+            //Lors qu'on rencontre une première fois le cours, 
+            //on définit ses infos puis l'étudiant courant
+            var infosCours = {
+                sigle: sigleCours,
+                groupe: groupeCours,
+                session: sessionCours,
+                moyenne: 0
+            };
+            var etudiant = {
+                codePermanent: codePermanent,
+                nom: tabNomPrenom[0],
+                prenom: tabNomPrenom[1],
+                noteFinale: parseInt(noteFinale)
+            };
+
+
+
+             //la "valeur" associée à la clé est d'abord les infos du cours
+             // puis une liste vide pour pouvoir la manipuler correctement après
+             
+            groupesCoursMap[cleGC] = [infosCours, listeEtd];
+            //Ajoutous l'étudiant
+            groupesCoursMap[cleGC][1].push(etudiant);
+
+
+
+        }
+        else {
+
+            var etudiant = {
+                codePermanent: codePermanent,
+                nom: tabNomPrenom[0],
+                prenom: tabNomPrenom[1],
+                noteFinale: parseInt(noteFinale)
+            };
+            //Ajoutous l'étudiant
+            groupesCoursMap[cleGC][1].push(etudiant);
+
+            groupesCoursMap[cleGC][1].push(etudiant);
+
+
+        }
+
+    }
+
+    var cles = Object.keys(groupesCoursMap);
+    //for(var k=0;k<cles.length;i++){
+    produireMoyenne(groupesCoursMap[cles[9]]);
+    console.log(groupesCoursMap[cles[9]]);
+    //} 
+}
+/**
+ * 
+ * @param {type} ins l'élément XML inscription courant
+ * @returns {String} une clé unique pour la Map GroupeCours 
+ */
+function genererCle(ins) {
+    var cle = "";
+    if (!(ins === "undefined")) {
+        cle = getContenuTexteXml(ins, "sigle") +
+                getContenuTexteXml(ins, "groupe") +
+                getContenuTexteXml(ins, "session");
+    }
+    return cle;
+}
+/**
+ * retourne le contenu texte d'une balise avant le parent spécifé dans le XML
+ * @param {type} parent 
+ * @param {type} balise
+ * @returns {unresolved}
+ */
+function getContenuTexteXml(parent, balise) {
+    return parent.getElementsByTagName(balise)[0].textContent;
+}
+/**
+ *  
+ * @param {type} codep 
+ * @returns {Array} un tableau contenant le nom et prenom basé sur le code permanent
+ */
+function getNomPrenomEtudiant(codep) {
+    var tab = [];
+    for (var i = 0; i < etudiants.length; i++) {
+        var e = etudiants[i];
+        if (getContenuTexteXml(e, "codePermanent") === codep) {
+            tab[0] = getContenuTexteXml(e, "nom");
+            tab[1] = getContenuTexteXml(e, "prenom");
+            return tab;
+        }
+    }
+}
+function produireMoyenne(gc) {
+    var somme = 0;
+    var nb_etd = gc[1].length;
+    var moyenne = 0;
+
+    for (var i = 0; i < nb_etd; i++) {
+        somme += gc[1][i].noteFinale;
+
+    }
+    moyenne = (somme / nb_etd).toFixed(2);
+    gc[0].moyenne = moyenne;
+
+
+
+}
 
 
 
