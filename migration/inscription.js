@@ -1,7 +1,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2014 laurent.
+ * Copyright 2014 Laurent Morissette.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,10 @@
 
 var fs = require("fs");
 var xmldom = require("xmldom");
-var xjs = require("xml2js");
+
 var mongo = require("mongodb");
 
-//TODO add more requires when needed
+
 
 var DEFAULT_DOSSIERS_XML = "dossiers.xml";
 var DEFAULT_INSCRIPTIONS_XML = "inscriptions.xml";
@@ -40,23 +40,24 @@ var server;
 var db;
 var etudiants;
 var inscriptions;
-var dossiers = [];
 
 
-// Lecture du fichier XML en mémoire.
+server = new mongo.Server(DEFAULT_SERVER_HOST, DEFAULT_PORT);
+db = new mongo.Db(DEFAULT_DB_NAME, server, {safe: true});
+
 fs.readFile(DEFAULT_DOSSIERS_XML, function(err, data) {
     if (err) {
         console.log("Error reading XML document");
+        process.exit(1);
     } else {
-        // Le fichier XML est retourné sous forme d'un buffer. Nous devons le
-        // transgormer en chaîne de caractères avant de l'envoyer au parser DOM.
+
         var domRoot = new xmldom.DOMParser().parseFromString(data.toString());
         var etudiantsList = domRoot.getElementsByTagName("etudiant");
         if (!etudiantsList.length) {
             console.log("La liste ne contient aucun etudiant.");
             process.exit(1);
         } else {
-            //console.log("INFO: chargement de la liste des étudiants terminée");
+            console.log("INFO: chargement de la liste des étudiants terminée");
             etudiants = etudiantsList;
             chargerInscriptions();
 
@@ -68,6 +69,7 @@ function chargerInscriptions() {
     fs.readFile(DEFAULT_INSCRIPTIONS_XML, function(err, data) {
         if (err) {
             console.log("Error reading XML document");
+            process.exit(1);
         } else {
 
             var domRoot = new xmldom.DOMParser().parseFromString(data.toString());
@@ -78,7 +80,7 @@ function chargerInscriptions() {
             } else {
                 console.log("INFO: chargement de la liste des incriptions terminée");
                 inscriptions = inscriptionsList;
-                //construireCollectionDossiers();
+                construireCollectionDossiers();
                 construireCollectionGC();
 
 
@@ -92,9 +94,6 @@ function construireCollectionDossiers() {
     console.log("INFO construction de la collection Dossiers");
 
 
-
-    server = new mongo.Server(DEFAULT_SERVER_HOST, DEFAULT_PORT);
-    db = new mongo.Db(DEFAULT_DB_NAME, server, {safe: true});
     db.open(function(err, db) {
 
         if (err) {
@@ -201,7 +200,7 @@ function construireCollectionGC() {
         var codePermanent = getContenuTexteXml(inscriptionCourante, "etudiant");
         var tabNomPrenom = getNomPrenomEtudiant(codePermanent);
 
-   
+
         if (!(cleGC in groupesCoursMap)) {
 
             listeEtd = new Array();
@@ -222,9 +221,9 @@ function construireCollectionGC() {
 
 
 
-             //la "valeur" associée à la clé est d'abord les infos du cours
-             // puis une liste vide pour pouvoir la manipuler correctement après
-             
+            //la "valeur" associée à la clé est d'abord les infos du cours
+            // puis une liste vide pour pouvoir la manipuler correctement après
+
             groupesCoursMap[cleGC] = [infosCours, listeEtd];
             //Ajoutous l'étudiant
             groupesCoursMap[cleGC][1].push(etudiant);
@@ -250,11 +249,27 @@ function construireCollectionGC() {
 
     }
 
-    var cles = Object.keys(groupesCoursMap);
-    //for(var k=0;k<cles.length;i++){
-    produireMoyenne(groupesCoursMap[cles[9]]);
-    console.log(groupesCoursMap[cles[9]]);
-    //} 
+    db.open(function(err, db) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            var cles = Object.keys(groupesCoursMap);
+            for (var k = 0; k < cles.length; k++) {
+                produireMoyenne(groupesCoursMap[cles[k]]);
+                var groupeCours=groupesCoursMap[cles[k]];
+                 collection.insert(groupeCours, function(groupeCours, result) {
+                            if (err) {
+                                console.log(err);
+                            }
+
+                        });
+            }
+        }
+        db.close();
+    });
+
+
 }
 /**
  * 
