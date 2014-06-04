@@ -254,17 +254,21 @@ function construireCollectionGC() {
             console.log(err);
         }
         else {
-            var cles = Object.keys(groupesCoursMap);
-            for (var k = 0; k < cles.length; k++) {
-                produireMoyenne(groupesCoursMap[cles[k]]);
-                var groupeCours=groupesCoursMap[cles[k]];
-                 collection.insert(groupeCours, function(groupeCours, result) {
-                            if (err) {
-                                console.log(err);
-                            }
+            db.collection(DEFAULT_GC_COLLECTION_NAME, function(err, collection) {
+                var cles = Object.keys(groupesCoursMap);
+                for (var k = 0; k < cles.length; k++) {
+                    produireMoyenne(groupesCoursMap[cles[k]]);
+                    var groupeCours = groupesCoursMap[cles[k]];
+                    collection.insert(groupeCours, function(err, result) {
+                        if (err) {
+                            console.log(err);
+                        }
 
-                        });
-            }
+                    });
+                }
+            });
+
+
         }
         db.close();
     });
