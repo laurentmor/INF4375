@@ -81,7 +81,8 @@ function chargerInscriptions() {
                 console.log("INFO: chargement de la liste des incriptions terminée");
                 inscriptions = inscriptionsList;
                 construireCollectionDossiers();
-                construireCollectionGC();
+                
+                
 
 
 
@@ -106,23 +107,32 @@ function construireCollectionDossiers() {
                     console.log(err);
                 }
                 else {
+                    var listeDossier=[];
                     for (var i = 0; i < etudiants.length; i++) {
                         var etudiant = etudiants[i];
-                        var e = construireEtudiantJson(etudiant);
-
-                        collection.insert(e, function(err, result) {
+                        var e ={dossier: construireEtudiantJson(etudiant)};
+                        listeDossier.push(e);
+                        }
+                        
+                       console.log("INFO: Insertion des étudiants dans la BD");
+                        collection.insert(listeDossier, function(err, result) {
                             if (err) {
                                 console.log(err);
                             }
-
+                            construireCollectionGC();
+                            console.log("INFO: migration terminée");
+                           db.close();
+                            
                         });
-                    }
-                    db.close();
+                    
+                    
 
+                
                 }
             });
 
 
+    
     });
 
 
@@ -185,8 +195,9 @@ function construireEtudiantJson(e) {
 
 function construireCollectionGC() {
     //Stratégie: une map à clé unique sigle cours, groupe et session concaténés
-    // chaque valeur est un tableau de  cases contenant:
-    //  la session,le sigle,le groupe puis un tableau de quartet cp, nom,prenom et note
+    // chaque valeur est un tableau de  cases contenant des cours:
+    //  la session,le sigle,le groupe puis sa liste d'étudiants
+    
     var groupesCoursMap = [];
     var listeEtd;
     for (var i = 0; i < inscriptions.length; i++) {
@@ -199,18 +210,23 @@ function construireCollectionGC() {
         var noteFinale = getContenuTexteXml(inscriptionCourante, "noteFinale");
         var codePermanent = getContenuTexteXml(inscriptionCourante, "etudiant");
         var tabNomPrenom = getNomPrenomEtudiant(codePermanent);
-
+        var Cours;
 
         if (!(cleGC in groupesCoursMap)) {
 
             listeEtd = new Array();
             //Lors qu'on rencontre une première fois le cours, 
             //on définit ses infos puis l'étudiant courant
-            var infosCours = {
+            //CORRECTIONS post TP1
+            //Tableau map à une dimension seulement avec intégration de la liste
+            //des étudiants directement dans le "Cours"
+            
+            Cours = {
                 sigle: sigleCours,
                 groupe: groupeCours,
                 session: sessionCours,
-                moyenne: 0
+                moyenne: 0,
+                listeEtudiants:listeEtd
             };
             var etudiant = {
                 codePermanent: codePermanent,
@@ -218,15 +234,12 @@ function construireCollectionGC() {
                 prenom: tabNomPrenom[1],
                 noteFinale: parseInt(noteFinale)
             };
-
-
-
-            //la "valeur" associée à la clé est d'abord les infos du cours
-            // puis une liste vide pour pouvoir la manipuler correctement après
-
-            groupesCoursMap[cleGC] = [infosCours, listeEtd];
-            //Ajoutous l'étudiant
-            groupesCoursMap[cleGC][1].push(etudiant);
+            //ajout de l'étudiant qu'on vient de créer 
+            Cours.listeEtudiants.push(etudiant);
+            //La valeur de la paire est mise à "Cours" afin d'en permettre 
+            //l'accès aux propriétés par la suite 
+            groupesCoursMap[cleGC] = Cours ;
+            
 
 
 
@@ -239,42 +252,50 @@ function construireCollectionGC() {
                 prenom: tabNomPrenom[1],
                 noteFinale: parseInt(noteFinale)
             };
-            //Ajoutous l'étudiant
-            groupesCoursMap[cleGC][1].push(etudiant);
-
-            groupesCoursMap[cleGC][1].push(etudiant);
+            //Suite au correction faites au modèle, comme la valeur dans la map
+            // est un "cours", on a  accès direct à sa liste d'étudiants
+            groupesCoursMap[cleGC].listeEtudiants.push(etudiant);
+            
 
 
         }
 
     }
+    
 
-    db.open(function(err, db) {
-        if (err) {
-            console.log(err);
-        }
-        else {
+           check();
             db.collection(DEFAULT_GC_COLLECTION_NAME, function(err, collection) {
+                
+                var listeGC=[];
                 var cles = Object.keys(groupesCoursMap);
+                
                 for (var k = 0; k < cles.length; k++) {
                     produireMoyenne(groupesCoursMap[cles[k]]);
                     var groupeCours = groupesCoursMap[cles[k]];
-                    collection.insert(groupeCours, function(err, result) {
-                        if (err) {
-                            console.log(err);
-                        }
+                    listeGC.push(groupeCours);
+                    
+                }
+                    console.log("INFO: Insertion des groupeCours dans la BD");
+                 
+                    collection.insert(listeGC, function(err, result) {
+                       
+                       if (err) {
+                         console.log(err);
+                      }
+                       
 
                     });
-                }
-            });
+               });
+               
+               }
 
 
-        }
-        db.close();
-    });
+        
+        
+    
 
 
-}
+
 /**
  * 
  * @param {type} ins l'élément XML inscription courant
@@ -316,19 +337,25 @@ function getNomPrenomEtudiant(codep) {
 }
 function produireMoyenne(gc) {
     var somme = 0;
-    var nb_etd = gc[1].length;
+    var listeEtdGC=gc.listeEtudiants;
+    var nb_etd =listeEtdGC.length;
     var moyenne = 0;
 
     for (var i = 0; i < nb_etd; i++) {
-        somme += gc[1][i].noteFinale;
+        somme += listeEtdGC[i].noteFinale;
 
     }
     moyenne = (somme / nb_etd).toFixed(2);
-    gc[0].moyenne = moyenne;
+    gc.moyenne = moyenne;
 
 
 
 }
+function check(){
+    console.log(db.DEFAULT_DOSSIERS_COLLECTION_NAME.find().length);
+}
+
+
 
 
 
