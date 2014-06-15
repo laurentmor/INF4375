@@ -263,7 +263,7 @@ function construireCollectionGC() {
     }
     
 
-           check();
+           
             db.collection(DEFAULT_GC_COLLECTION_NAME, function(err, collection) {
                 
                 var listeGC=[];
@@ -350,9 +350,6 @@ function produireMoyenne(gc) {
 
 
 
-}
-function check(){
-    console.log(db.DEFAULT_DOSSIERS_COLLECTION_NAME.find().length);
 }
 
 
