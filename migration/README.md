@@ -1,7 +1,7 @@
 Ce projet est un script Node Permettant de faire la migration de données XML
  vers MongoDB
 Réalisé en juin 2014 dans le cadre du cours INF4375
-Pour Jacques Berger (et pour moi aussi :))
+Pour [Jacques Berger ](https://github.com/jacquesberger) (et pour moi aussi :))
 
 Versions des outils utilisés:
 * node: 0.10.24
