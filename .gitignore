@@ -7,3 +7,6 @@
 /*.pdf
 /tp1
 /migration/*.zip
+/Backend/node_modules
+/Backend/*.pdf
+/Backend/migration

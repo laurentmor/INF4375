@@ -110,7 +110,7 @@ function construireCollectionDossiers() {
                     var listeDossier=[];
                     for (var i = 0; i < etudiants.length; i++) {
                         var etudiant = etudiants[i];
-                        var e ={dossier: construireEtudiantJson(etudiant)};
+                        var e =construireEtudiantJson(etudiant);
                         listeDossier.push(e);
                         }
                         
