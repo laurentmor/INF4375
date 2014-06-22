@@ -5,12 +5,12 @@ Pour [Jacques Berger ](https://github.com/jacquesberger) (et pour moi aussi :))
 Dépendences
 ============
 backend@0.0.1 
-├─┬ body-parser@1.0.2
-│ ├── qs@0.6.6
-│ ├─┬ raw-body@1.1.7
-│ │ ├── bytes@1.0.0
-│ │ └── string_decoder@0.10.25-1
-│ └─┬ type-is@1.1.0
+* body-parser@1.0.2
+  * qs@0.6.6
+  * raw-body@1.1.7
+  * bytes@1.0.0
+    * string_decoder@0.10.25-1
+    * type-is@1.1.0
 │   └── mime@1.2.11
 ├─┬ cookie-parser@1.0.1
 │ ├── cookie@0.1.0
