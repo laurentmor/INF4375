@@ -154,35 +154,39 @@ router.get('/groupes/:oid', function(req, res) {
         }
     });
 });
-function etudiantAvecCoursReussi(etd) {
-    return etd.listeCoursReussis.length > 0;
-}
-
-router.delete('/groupes/:oid', function(req, res) {
-      var id = req.params.oid;
+//Service - 8 Supprime le groupe-cours. 
+//Il est impossible de supprimer un groupe-cours où des étudiants y sont inscrits
+router.delete('/groiupes/:oid', function(req, res) {
+    var id = req.params.id;
     mongoDbConnection(function(databaseConnection) {
-       if (mongodb.ObjectID.isValid(id)) {
+        if (mongodb.ObjectID.isValid(id)) {
             var criteres = {
                 _id: mongodb.ObjectID(id)
             };
-
-        databaseConnection.collection('dossiers').find(criteres).toArray(function(err, items) {
-            leDossier = items[0];
-            if (etudiantAvecCoursReussi(leDossier)) {
-                res.json(500, {error: "Impossible de suprimmer le dossier." +
-                            "l'étudiant a déjà réussi un cours"});
-
+            databaseConnection.collection('groupesCours').find(criteres).toArray(function(err, items) {
+                if (err) {
+                    res.json(500, {error: err});
+                }
+                else {
+                    var leGroupe = items[0];
+                    if (groupeAvecEtudiants(leGroupe)) {
+                        res.json(500, {error: "Impossible de suprimmer le groupe-cours." +
+                                    "des étudiants y sont inscrits"});
+                    }
+                    else {
+                        databaseConnection.collection('groupesCours').remove(leGroupe, function(err, res) {
+                            if (err) {
+                                res.json(500, {error: err});
+                            } else
+                                res.json(200, {msg: "Suppression correcte"});
+                        });
+                    }
+                }
             }
-            else {
-                databaseConnection.collection('dossiers').remove(leDossier, function(err, res) {
-                    if (err) {
-                        res.json(500, {error: err});
-                    } else
-                        res.json(200, {msg: "Suppression correcte"});
-                });
-            }
+            );
+        }
 
-        });
+
 
     });
 
@@ -191,4 +195,11 @@ router.delete('/groupes/:oid', function(req, res) {
 function etudiantAvecCoursReussi(etd) {
     return etd.listeCoursReussis.length > 0;
 }
+
+function groupeAvecEtudiants(grp) {
+    return grp.listeEtudiants.length > 0;
+}
+
+
+
 module.exports = router;
