@@ -1,19 +1,96 @@
-Ce projet est un script Node Permettant de faire la migration de données XML
- vers MongoDB
+Ce projet est composé des Services REST pour la gestion des dossiers étudiant et des groupes-cours
 Réalisé en juin 2014 dans le cadre du cours INF4375
 Pour [Jacques Berger ](https://github.com/jacquesberger) (et pour moi aussi :))
 
-Versions des outils utilisés:
-* node: 0.10.24
-* MongoDB:2.6
+Dépendences
+============
+backend@0.0.1 
+├─┬ body-parser@1.0.2
+│ ├── qs@0.6.6
+│ ├─┬ raw-body@1.1.7
+│ │ ├── bytes@1.0.0
+│ │ └── string_decoder@0.10.25-1
+│ └─┬ type-is@1.1.0
+│   └── mime@1.2.11
+├─┬ cookie-parser@1.0.1
+│ ├── cookie@0.1.0
+│ └── cookie-signature@1.0.3
+├── debug@0.7.4
+├─┬ express@4.2.0
+│ ├─┬ accepts@1.0.1
+│ │ ├── mime@1.2.11
+│ │ └── negotiator@0.4.6
+│ ├── buffer-crc32@0.2.1
+│ ├── cookie@0.1.2
+│ ├── cookie-signature@1.0.3
+│ ├── debug@0.8.1
+│ ├── escape-html@1.0.1
+│ ├── fresh@0.2.2
+│ ├── merge-descriptors@0.0.2
+│ ├── methods@1.0.0
+│ ├── parseurl@1.0.1
+│ ├── path-to-regexp@0.1.2
+│ ├── qs@0.6.6
+│ ├── range-parser@1.0.0
+│ ├─┬ send@0.3.0
+│ │ ├── debug@0.8.0
+│ │ └── mime@1.2.11
+│ ├── serve-static@1.1.0
+│ ├─┬ type-is@1.1.0
+│ │ └── mime@1.2.11
+│ └── utils-merge@1.0.0
+├─┬ jade@1.3.1
+│ ├── character-parser@1.2.0
+│ ├── commander@2.1.0
+│ ├─┬ constantinople@2.0.0
+│ │ └─┬ uglify-js@2.4.14
+│ │   ├── async@0.2.10
+│ │   ├─┬ optimist@0.3.7
+│ │   │ └── wordwrap@0.0.2
+│ │   ├─┬ source-map@0.1.34
+│ │   │ └── amdefine@0.1.0
+│ │   └── uglify-to-browserify@1.0.2
+│ ├── mkdirp@0.3.5
+│ ├─┬ monocle@1.1.51
+│ │ └─┬ readdirp@0.2.5
+│ │   └─┬ minimatch@0.3.0
+│ │     ├── lru-cache@2.5.0
+│ │     └── sigmund@1.0.0
+│ ├─┬ transformers@2.1.0
+│ │ ├─┬ css@1.0.8
+│ │ │ ├── css-parse@1.0.4
+│ │ │ └── css-stringify@1.0.5
+│ │ ├─┬ promise@2.0.0
+│ │ │ └── is-promise@1.0.1
+│ │ └─┬ uglify-js@2.2.5
+│ │   ├─┬ optimist@0.3.7
+│ │   │ └── wordwrap@0.0.2
+│ │   └─┬ source-map@0.1.34
+│ │     └── amdefine@0.1.0
+│ └─┬ with@3.0.0
+│   └─┬ uglify-js@2.4.14
+│     ├── async@0.2.10
+│     ├─┬ optimist@0.3.7
+│     │ └── wordwrap@0.0.2
+│     ├─┬ source-map@0.1.34
+│     │ └── amdefine@0.1.0
+│     └── uglify-to-browserify@1.0.2
+├─┬ mongodb@1.4.7
+│ ├─┬ bson@0.2.9
+│ │ └── nan@1.0.0
+│ ├── kerberos@0.0.3
+│ └─┬ readable-stream@1.0.27-1
+│   ├── core-util-is@1.0.1
+│   ├── inherits@2.0.1
+│   ├── isarray@0.0.1
+│   └── string_decoder@0.10.25-1
+├─┬ morgan@1.0.1
+│ └── bytes@0.3.0
+├─┬ schema-inspector@1.4.2
+│ └── async@0.9.0
+└── static-favicon@1.0.2
 
-Améliorations possibles
-========================
-Construire la liste des étudiants sous forme de Map avec clé 
-basée sur le code permanent
-plus face pour la recherche du nom après au niveau des groupe cours
-Comme j'ai su récemment que les tableaux en javascript peuvent 
-agir comme des maps, pas eu le temps de récrire le code
+
 
 
 
