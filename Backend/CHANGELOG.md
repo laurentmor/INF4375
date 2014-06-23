@@ -1,6 +1,6 @@
 ## Change Log
 
-### upcoming (2014/06/23 17:00 +00:00)
+### upcoming (2014/06/23 17:03 +00:00)
 - [baf1a10](https://github.com/laurentmor/INF4375-2013E/commit/baf1a102e43e852b5822aaa3bfa21eb9e8d374e9) Labo 01: Fichier html (@jpcaissy)
 - [fd4479f](https://github.com/laurentmor/INF4375-2013E/commit/fd4479fecb23a56c7fe3e82e80545b19ee290cbc) Ajout labo01.js (@jpcaissy)
 - [bdd877d](https://github.com/laurentmor/INF4375-2013E/commit/bdd877de5296d62d892a3724826b7f1330d867e1) Labo01 : table to div (@jpcaissy)
@@ -62,3 +62,4 @@
 - [2733156](https://github.com/laurentmor/INF4375-2013E/commit/273315693da9c300d72d7addb65cc379b7f6b731) readMe (@laurentmor)
 - [4ef2b41](https://github.com/laurentmor/INF4375-2013E/commit/4ef2b4127492cd89bea7fff15a3908fa81c2327c) validations diverses (@laurentmor)
 - [e940d7e](https://github.com/laurentmor/INF4375-2013E/commit/e940d7ed22ada870d32a7bd5df0a65573e5616f3) CHANGELOG.md genéré avec github-changes (@laurentmor)
+- [3d3ee73](https://github.com/laurentmor/INF4375-2013E/commit/3d3ee73d06ca542fdb94baa1ae306495dd54dfbd) maj du changelog et .gitignore (@laurentmor)
