@@ -21,6 +21,49 @@ Commandes pour démarrer le serveur
   npm install
   npm start
 ```
+Exemples de donnée JSON
+=======================
+* Dossier
+```JSON
+{
+     
+        "nom" : "Pelletier",
+        "prenom" : "Chantal",
+        "codePermanent" : "PELC88591901",
+        "sexe" : "2",
+        "dateNaissance" : "1988-09-19",
+        "listeCours" : [
+                {
+                        "sigle" : "INF2015",
+                        "groupe" : "40",
+                        "session" : "20141",
+                        "noteFinale" : 41
+                },
+                {
+                        "sigle" : "INF4150",
+                        "groupe" : "30",
+                        "session" : "20141",
+                        "noteFinale" : 70
+                },
+                {
+                        "sigle" : "INF4170",
+                        "groupe" : "30",
+                        "session" : "20141",
+                        "noteFinale" : 72
+                },
+                {
+                        "sigle" : "INF2015",
+                        "groupe" : "10",
+                        "session" : "20133",
+                        "noteFinale" : 45
+                }
+        ],
+        "listeCoursReussis" : [
+                "INF4150",
+                "INF4170"
+        ]
+}
+```
 Dépendences
 ============
 backend@0.0.1 
