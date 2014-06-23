@@ -64,6 +64,247 @@ Exemples de donnée JSON
         ]
 }
 ```
+*Groupe-Cours
+```JSON
+{
+        
+        "sigle" : "INF4375",
+        "groupe" : "20",
+        "session" : "20142",
+        "moyenne" : "68.63",
+        "listeEtudiants" : [
+                {
+                        "codePermanent" : "CYRC72560101",
+                        "nom" : "Cyr",
+                        "prenom" : "Clara",
+                        "noteFinale" : 98
+                },
+                {
+                        "codePermanent" : "MERM89590101",
+                        "nom" : "Mercier",
+                        "prenom" : "Maélie",
+                        "noteFinale" : 73
+                },
+                {
+                        "codePermanent" : "LAPO91602401",
+                        "nom" : "Lapierre",
+                        "prenom" : "Olivia",
+                        "noteFinale" : 35
+                },
+                {
+                        "codePermanent" : "DIOC90552101",
+                        "nom" : "Dion",
+                        "prenom" : "Clara",
+                        "noteFinale" : 60
+                },
+                {
+                        "codePermanent" : "SAIO77612201",
+                        "nom" : "Saint-Pierre",
+                        "prenom" : "Océane",
+                        "noteFinale" : 99
+                },
+                {
+                        "codePermanent" : "VACN55551301",
+                        "nom" : "Vachon",
+                        "prenom" : "Noémie",
+                        "noteFinale" : 93
+                },
+                {
+                        "codePermanent" : "SAIE73510901",
+                        "nom" : "Saint-Pierre",
+                        "prenom" : "Elizabeth",
+                        "noteFinale" : 75
+                },
+                {
+                        "codePermanent" : "GOSL79572301",
+                        "nom" : "Gosselin",
+                        "prenom" : "Louise",
+                        "noteFinale" : 57
+                },
+                {
+                        "codePermanent" : "MORO57102301",
+                        "nom" : "Moreau",
+                        "prenom" : "Olivier",
+                        "noteFinale" : 63
+                },
+                {
+                        "codePermanent" : "BILB73102701",
+                        "nom" : "Bilodeau",
+                        "prenom" : "Benjamin",
+                        "noteFinale" : 96
+                },
+                {
+                        "codePermanent" : "THEE83552801",
+                        "nom" : "Therrien",
+                        "prenom" : "Emma",
+                        "noteFinale" : 47
+                },
+                {
+                        "codePermanent" : "NADÉ91120901",
+                        "nom" : "Nadeau",
+                        "prenom" : "Édouard",
+                        "noteFinale" : 64
+                },
+                {
+                        "codePermanent" : "JACJ91042501",
+                        "nom" : "Jacques",
+                        "prenom" : "Jérémy",
+                        "noteFinale" : 88
+                },
+                {
+                        "codePermanent" : "MERC64101201",
+                        "nom" : "Mercier",
+                        "prenom" : "Cédric",
+                        "noteFinale" : 41
+                },
+                {
+                        "codePermanent" : "GUAL74081901",
+                        "nom" : "Guay",
+                        "prenom" : "Léo",
+                        "noteFinale" : 86
+                },
+                {
+                        "codePermanent" : "ROYÉ64060201",
+                        "nom" : "Roy",
+                        "prenom" : "Éthan",
+                        "noteFinale" : 91
+                },
+                {
+                        "codePermanent" : "AUDL83512801",
+                        "nom" : "Audet",
+                        "prenom" : "Louise",
+                        "noteFinale" : 63
+                },
+                {
+                        "codePermanent" : "DESG78030701",
+                        "nom" : "Deschênes",
+                        "prenom" : "Guillaume",
+                        "noteFinale" : 68
+                },
+                {
+                        "codePermanent" : "BERO79042601",
+                        "nom" : "Bernard",
+                        "prenom" : "Olivier",
+                        "noteFinale" : 66
+                },
+                {
+                        "codePermanent" : "MORJ89102401",
+                        "nom" : "Moreau",
+                        "prenom" : "Jonathan",
+                        "noteFinale" : 70
+                },
+                {
+                        "codePermanent" : "HOUA59562701",
+                        "nom" : "Houle",
+                        "prenom" : "Arianne",
+                        "noteFinale" : 85
+                },
+                {
+                        "codePermanent" : "GOUE81592001",
+                        "nom" : "Goulet",
+                        "prenom" : "Elizabeth",
+                        "noteFinale" : 94
+                },
+                {
+                        "codePermanent" : "LESM81601001",
+                        "nom" : "Lessard",
+                        "prenom" : "Marianne",
+                        "noteFinale" : 88
+                },
+                {
+                        "codePermanent" : "LALD57030301",
+                        "nom" : "Lalonde",
+                        "prenom" : "Dylan",
+                        "noteFinale" : 95
+                },
+                {
+                        "codePermanent" : "HAMM62071601",
+                        "nom" : "Hamel",
+                        "prenom" : "Maxime",
+                        "noteFinale" : 61
+                },
+                {
+                        "codePermanent" : "CHAF69042701",
+                        "nom" : "Charbonneau",
+                        "prenom" : "Félix",
+                        "noteFinale" : 38
+                },
+                {
+                        "codePermanent" : "LEGJ89091501",
+                        "nom" : "Legault",
+                        "prenom" : "Justin",
+                        "noteFinale" : 38
+                },
+                {
+                        "codePermanent" : "FONA89622201",
+                        "nom" : "Fontaine",
+                        "prenom" : "Arianne",
+                        "noteFinale" : 58
+                },
+                {
+                        "codePermanent" : "BOUM86531001",
+                        "nom" : "Bouchard",
+                        "prenom" : "Maika",
+                        "noteFinale" : 92
+                },
+                {
+                        "codePermanent" : "ROYA58062101",
+                        "nom" : "Roy",
+                        "prenom" : "Adam",
+                        "noteFinale" : 41
+                },
+                {
+                        "codePermanent" : "RENT81031001",
+                        "nom" : "Renaud",
+                        "prenom" : "Thomas",
+                        "noteFinale" : 82
+                },
+                {
+                        "codePermanent" : "MICC70520101",
+                        "nom" : "Michaud",
+                        "prenom" : "Camille",
+                        "noteFinale" : 40
+                },
+                {
+                        "codePermanent" : "LEMJ79101601",
+                        "nom" : "Lemieux",
+                        "prenom" : "Jacob",
+                        "noteFinale" : 59
+                },
+                {
+                        "codePermanent" : "LEPM64550501",
+                        "nom" : "Lepage",
+                        "prenom" : "Mia",
+                        "noteFinale" : 69
+                },
+                {
+                        "codePermanent" : "LECA81010301",
+                        "nom" : "Leclerc",
+                        "prenom" : "Alexandre",
+                        "noteFinale" : 77
+                },
+                {
+                        "codePermanent" : "BEAM65521501",
+                        "nom" : "Beaulieu",
+                        "prenom" : "Maude",
+                        "noteFinale" : 82
+                },
+                {
+                        "codePermanent" : "BILÉ75601401",
+                        "nom" : "Bilodeau",
+                        "prenom" : "Élodie",
+                        "noteFinale" : 35
+                },
+                {
+                        "codePermanent" : "RICM69521801",
+                        "nom" : "Richard",
+                        "prenom" : "Maika",
+                        "noteFinale" : 41
+                }
+        ]
+}
+
+``
 Dépendences
 ============
 backend@0.0.1 
