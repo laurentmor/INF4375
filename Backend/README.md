@@ -64,7 +64,7 @@ Exemples de donnée JSON
         ]
 }
 ```
-*Groupe-Cours
+* Groupe-Cours
 ```JSON
 {
         
