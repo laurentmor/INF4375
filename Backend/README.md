@@ -14,10 +14,38 @@ Fonctionalités
 | Mettre à jour un Groupe-cours                                       |   |   |   |   | PUT     | /groupes/:oid |   | ObjectID du Groupe+changements |   |   | Statut de requête    |
 | Supprime le groupe-cours.                                           |   |   |   |   | DELETE  | /groupes/:oid |   | ObjectID du Groupe+changements |   |   | Statut de requête    |
 
-Commandes pour démarrer le serveur
-===================
+Prérequis:
+==========
+* node: 0.10.24+
+* MongoDB:2.6+
+
+Commandes pour construire la BD
+===================================
+1. Démarrer d'abord votre serveur mongo
+2. puis exécuter ceci:
 ```Shell
-  cd <Répetoire racine>\Backend
+  cd <Répertoire racine>\Backend\migration
+  npm install
+  node migration
+```
+3. À l'aide d'un client mongo exécuter ceci:
+```Shell
+use MORL05058301
+show collections
+```
+afin de vérifier que la création de la BD est correcte
+Résultats attendus des commandes
+--------------------------------
+```Shell
+Dossiers
+GroupesCours
+```
+
+
+Commandes pour démarrer le serveur
+================================
+```Shell
+  cd <Répetoire racine>\Backend\
   npm install
   npm start
 ```
