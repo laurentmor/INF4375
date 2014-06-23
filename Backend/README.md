@@ -1,7 +1,18 @@
 Ce projet est composé des Services REST pour la gestion des dossiers étudiant et des groupes-cours
 Réalisé en juin 2014 dans le cadre du cours INF4375
 Pour [Jacques Berger ](https://github.com/jacquesberger) (et pour moi aussi :))
-
+Fonctionalités
+==============
+| Service                                                             |   |   |   |   | Méthode | URL           |   | Données entrée                 |   |   | Sortie               |
+|---------------------------------------------------------------------|---|---|---|---|---------|---------------|---|--------------------------------|---|---|----------------------|
+| Envoie au client le dossier complet de l'étudiant                   |   |   |   |   | GET     | /dossiers/:cp |   | Code permanent                 |   |   | Dossier en JSON      |
+| Ajoute un dossier étudiant                                          |   |   |   |   | POST    | /dossiers     |   | Dossier en JSON                |   |   | Statut de requête    |
+| Reçoit du client l'ensemble des modifications à apporter au dossier |   |   |   |   | PUT     | /dossiers/:cp |   | Code permanent+changements     |   |   | Statut de requête    |
+| Supprime le dossier de l'étudiant.                                  |   |   |   |   | DELETE  | /dossiers/:cp |   | Code permanent                 |   |   | Statut de requête    |
+| Envoie au client le groupeCours                                     |   |   |   |   | GET     | /groupes/:oid |   | ObjectID du Groupe             |   |   | Groupe-Cours en JSON |
+| ajoute un groupe-cours                                              |   |   |   |   | POST    | /groupes/     |   | Groupe-Cours en JSON           |   |   | Statut de requête    |
+| Mettre à jour un Groupe-cours                                       |   |   |   |   | PUT     | /groupes/:oid |   | ObjectID du Groupe+changements |   |   | Statut de requête    |
+| Supprime le groupe-cours.                                           |   |   |   |   | DELETE  | /groupes/:oid |   |                                |   |   |                      |
 Dépendences
 ============
 backend@0.0.1 
