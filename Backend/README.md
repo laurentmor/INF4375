@@ -12,7 +12,13 @@ Fonctionalités
 | Envoie au client le groupeCours                                     |   |   |   |   | GET     | /groupes/:oid |   | ObjectID du Groupe             |   |   | Groupe-Cours en JSON |
 | ajoute un groupe-cours                                              |   |   |   |   | POST    | /groupes/     |   | Groupe-Cours en JSON           |   |   | Statut de requête    |
 | Mettre à jour un Groupe-cours                                       |   |   |   |   | PUT     | /groupes/:oid |   | ObjectID du Groupe+changements |   |   | Statut de requête    |
-| Supprime le groupe-cours.                                           |   |   |   |   | DELETE  | /groupes/:oid |   |                                |   |   |                      |
+| Supprime le groupe-cours.                                           |   |   |   |   | DELETE  | /groupes/:oid |   | ObjectID du Groupe+changements |   |   | Statut de requête    |
+
+Démarrer le serveur
+===================
+```Shell
+  cd
+```
 Dépendences
 ============
 backend@0.0.1 
