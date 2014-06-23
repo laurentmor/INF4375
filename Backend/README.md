@@ -14,10 +14,12 @@ Fonctionalités
 | Mettre à jour un Groupe-cours                                       |   |   |   |   | PUT     | /groupes/:oid |   | ObjectID du Groupe+changements |   |   | Statut de requête    |
 | Supprime le groupe-cours.                                           |   |   |   |   | DELETE  | /groupes/:oid |   | ObjectID du Groupe+changements |   |   | Statut de requête    |
 
-Démarrer le serveur
+Commandes pour démarrer le serveur
 ===================
 ```Shell
-  cd
+  cd <Répetoire racine>\Backend
+  npm install
+  npm start
 ```
 Dépendences
 ============
