@@ -28,7 +28,7 @@ Commandes pour construire la BD
   npm install
   node migration
 ```
-3. À l'aide d'un client mongo exécuter ceci:
+* À l'aide d'un client mongo exécuter ceci:
 ```Shell
 use MORL05058301
 show collections
