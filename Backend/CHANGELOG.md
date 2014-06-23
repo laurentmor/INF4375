@@ -1,6 +1,6 @@
 ## Change Log
 
-### upcoming (2014/06/23 18:32 +00:00)
+### upcoming (2014/06/23 18:40 +00:00)
 - [baf1a10](https://github.com/laurentmor/INF4375/commit/baf1a102e43e852b5822aaa3bfa21eb9e8d374e9) Labo 01: Fichier html (@jpcaissy)
 - [fd4479f](https://github.com/laurentmor/INF4375/commit/fd4479fecb23a56c7fe3e82e80545b19ee290cbc) Ajout labo01.js (@jpcaissy)
 - [bdd877d](https://github.com/laurentmor/INF4375/commit/bdd877de5296d62d892a3724826b7f1330d867e1) Labo01 : table to div (@jpcaissy)
@@ -67,3 +67,4 @@
 - [17215a0](https://github.com/laurentmor/INF4375/commit/17215a01fbde375f995a781478036147258eaacd) corrections au readMe (@laurentmor)
 - [36105d9](https://github.com/laurentmor/INF4375/commit/36105d985a4c57efd4df39fcddf59506ac5a8649) corrections au readMe (@laurentmor)
 - [f6f6142](https://github.com/laurentmor/INF4375/commit/f6f61426154b5e3acbed1a06851868b1251a9d39) maj du changelog (@laurentmor)
+- [6b5d595](https://github.com/laurentmor/INF4375/commit/6b5d59584b20b95536cf4126a09c0ecb1fa3b7ed) maj du changelog (@laurentmor)
