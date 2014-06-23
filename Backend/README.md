@@ -16,7 +16,7 @@ Fonctionalités
 
 Prérequis:
 ==========
-* node: 0.10.24+
+* node: 0.10.24+ 
 * MongoDB:2.6+
 
 Commandes pour construire la BD
