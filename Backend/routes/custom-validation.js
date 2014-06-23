@@ -24,10 +24,11 @@
 /**
  * 
  * Module pour la validation d'objets JSON
+ * et d'autres choses comme le code permanent
  * REF des schémas: http://www.jsonschema.net/
  */
 var inspector = require('schema-inspector');
-
+var regExCp=/([a-zA-Z]{4})\d{8}/;
 var schemaDefinitionDossier = {
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
@@ -160,7 +161,10 @@ function validerGroupe(groupe) {
 
     return validation;
 }
-
+function validerCodePermanent(code){
+    return regExCp.test(code);
+}
 exports.validerDossier = validerDossier;
 exports.validerGroupe = validerGroupe;
+exports.validerCodePermanent=validerCodePermanent;
 

@@ -33,24 +33,40 @@ var mongoDbConnection = require('./connection.js');
 
 
 var router = express.Router();
-var schemas = require('./schema.js');
+var validator = require('./custom-validation.js');
 
 
 /**
  * Service - 1 Envoie au client le dossier complet de l'étudiant, en format JSON 
  */
 router.get('/dossiers/:cp', function(req, res) {
+    preparerReponseJSON(res);
     var leCode = req.params.cp;
-    //TODO valider le cp
-    mongoDbConnection(function(databaseConnection) {
-        var criteres = {
-            codePermanent: leCode
-        };
-        databaseConnection.collection('dossiers').find(criteres).toArray(function(err, items) {
-            var leDossier = items[0];
-            res.json(leDossier);
+    if (!validator.validerCodePermanent(leCode)) {
+        res.json(500, {error: "Code permanent de format incorrect\nFormat correct:AAAA00000000"});
+    }
+    else {
+
+
+        mongoDbConnection(function(databaseConnection, err) {
+            if (err) {
+
+
+                res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+            } else {
+                var criteres = {
+                    codePermanent: leCode
+                };
+                databaseConnection.collection('dossiers').find(criteres).toArray(function(err, items) {
+                    var leDossier = items[0];
+                    res.json(leDossier);
+                });
+            }
         });
-    });
+
+
+    }
+
 });
 /**
  * service - 2 ajoute un dossier étudiant
@@ -58,22 +74,30 @@ router.get('/dossiers/:cp', function(req, res) {
  * et crée le dossier*/
 router.post('/dossiers', function(req, res) {
     var dossier = req.body;
+    preparerReponseJSON(res);
     try {
-        var resultatValidation = schemas.validerDossier(dossier);
+        var resultatValidation = validator.validerDossier(dossier);
 
         if (!resultatValidation.valid) {
+
             res.json(500, {error: resultatValidation.format()});
         } else {
-            mongoDbConnection(function(databaseConnection) {
-                databaseConnection.collection('dossiers').insert(dossier,
-                        function(err, result) {
-                            if (err) {
-                                res.json(500, {error: err});
-                            }
-                            else {
-                                res.json(200, {msg: 'OK'});
-                            }
-                        });
+            mongoDbConnection(function(databaseConnection, err) {
+                if (err) {
+
+
+                    res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+                } else {
+                    databaseConnection.collection('dossiers').insert(dossier,
+                            function(err, result) {
+                                if (err) {
+                                    res.json(500, {error: err});
+                                }
+                                else {
+                                    res.json(200, {msg: 'OK'});
+                                }
+                            });
+                }
             });
         }
     }
@@ -83,89 +107,119 @@ router.post('/dossiers', function(req, res) {
 });
 /**
  * Service - 3 Reçoit du client l'ensemble des modifications à apporter au dossier
- *  en format JSON,et les applique au dossier
+ *  puis lecode permanent  en format JSON,et les applique au dossier
  */
 
 router.put('/dossiers/:cp', function(req, res) {
-    var codePermanent = req.params.cp;
+    preparerReponseJSON(res);
+    var leCode = req.params.cp;
     var modificationsDossier = req.body;
+    if (!validator.validerCodePermanent(leCode)) {
+        res.json(500, {error: "Code permanent de format incorrect\nFormat correct:AAAA00000000"});
+    }
+    else {
 
-    try {
-        var resultatValidation = schemas.validerDossier(modificationsDossier);
+        try {
+            var resultatValidation = validator.validerDossier(modificationsDossier);
 
-        if (!resultatValidation.valid) {
-            res.json(500, {error: resultatValidation.format()});
-        }
+            if (!resultatValidation.valid) {
+                res.json(500, {error: resultatValidation.format()});
+            }
 
-        else {
-            mongoDbConnection(function(databaseConnection) {
-
-                databaseConnection.collection('dossiers').update(
-                        {'codePermanent': codePermanent},
-                {$set: modificationsDossier},
-                function(err, result) {
-
+            else {
+                mongoDbConnection(function(databaseConnection, err) {
                     if (err) {
-                        res.json(500, {error: err});
+
+
+                        res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
                     } else {
-                        res.json(200, {msg: 'OK', nombreDocumentsAffectesParUpdate: result});
+
+                        databaseConnection.collection('dossiers').update(
+                                {'codePermanent': codePermanent},
+                        {$set: modificationsDossier},
+                        function(err, result) {
+
+                            if (err) {
+                                res.json(500, {error: err});
+                            } else {
+                                res.json(200, {msg: 'OK', nombreDocumentsAffectesParUpdate: result});
+                            }
+                        });
                     }
                 });
-            });
-        }
+            }
 
-    } catch (error) {
-        res.json(500, {error: error.toString()});
+        } catch (error) {
+            res.json(500, {error: error.toString()});
+        }
     }
 });
 /**Service - 4 Supprime le dossier de l'étudiant.
  * Il est impossible de supprimer un dossier si 
  * l'étudiant a déjà complété un cours avec succès.*/
 router.delete('/dossiers/:cp', function(req, res) {
+    preparerReponseJSON(res);
     var leCode = req.params.cp;
-    //TODO valider le cp
-    mongoDbConnection(function(databaseConnection) {
-        var leDossier;
-        var criteres = {
-            codePermanent: leCode
-        };
-        databaseConnection.collection('dossiers').find(criteres).toArray(function(err, items) {
-            leDossier = items[0];
-            if (etudiantAvecCoursReussi(leDossier)) {
-                res.json(500, {error: "Impossible de suprimmer le dossier." +
-                            "l'étudiant a déjà réussi un cours"});
+    if (!validator.validerCodePermanent(leCode)) {
+        res.json(500, {error: "Code permanent de format incorrect\nFormat correct:AAAA00000000"});
+    }
+    else {
+        mongoDbConnection(function(databaseConnection, err) {
+            var leDossier;
+            var criteres = {
+                codePermanent: leCode
+            };
+            if (err) {
 
-            }
-            else {
-                databaseConnection.collection('dossiers').remove(leDossier, function(err, res) {
-                    if (err) {
-                        res.json(500, {error: err});
-                    } else
-                        res.json(200, {msg: "Suppression correcte"});
+
+                res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+            } else {
+                databaseConnection.collection('dossiers').find(criteres).toArray(function(err, items) {
+                    leDossier = items[0];
+                    if (etudiantAvecCoursReussi(leDossier)) {
+                        res.json(500, {error: "Impossible de suprimmer le dossier." +
+                                    "l'étudiant a déjà réussi un cours"});
+
+                    }
+                    else {
+                        databaseConnection.collection('dossiers').remove(leDossier, function(err, res) {
+                            if (err) {
+                                res.json(500, {error: err});
+                            } else
+                                res.json(200, {msg: "Suppression correcte"});
+                        });
+                    }
+
                 });
             }
 
         });
-
-    });
+    }
 
 });
 
 /** service - 5 Envoie au client le groupeCours  en format JSON*/
 router.get('/groupes/:oid', function(req, res) {
     var id = req.params.oid;
+    preparerReponseJSON(res);
 
-    mongoDbConnection(function(databaseConnection) {
+    mongoDbConnection(function(databaseConnection, err) {
         if (mongodb.ObjectID.isValid(id)) {
             var criteres = {
                 _id: mongodb.ObjectID(id)
             };
+            if (err) {
 
 
-            databaseConnection.collection('groupesCours').find(criteres).toArray(function(err, items) {
-                var leGroupe = items[0];
-                res.json(leGroupe);
-            });
+                res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+            } else {
+
+
+                databaseConnection.collection('groupesCours').find(criteres).toArray(function(err, items) {
+                    var leGroupe = items[0];
+                    res.json(leGroupe);
+                });
+            }
         }
     });
 });
@@ -174,23 +228,30 @@ router.get('/groupes/:oid', function(req, res) {
  *Reçoit du client un groupe, en format JSON, 
  et crée le dossier*/
 router.post('/groupes', function(req, res) {
+    preparerReponseJSON(res);
     var groupe = req.body;
     try {
-        var resultatValidation = schemas.validerGroupe(groupe);
+        var resultatValidation = validator.validerGroupe(groupe);
 
         if (!resultatValidation.valid) {
             res.json(500, {error: resultatValidation.format()});
         } else {
-            mongoDbConnection(function(databaseConnection) {
-                databaseConnection.collection('groupesCours').insert(groupe,
-                        function(err, result) {
-                            if (err) {
-                                res.json(500, {error: err});
-                            }
-                            else {
-                                res.json(200, {msg: 'OK'});
-                            }
-                        });
+            mongoDbConnection(function(databaseConnection, err) {
+                if (err) {
+
+
+                    res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+                } else {
+                    databaseConnection.collection('groupesCours').insert(groupe,
+                            function(err, result) {
+                                if (err) {
+                                    res.json(500, {error: err});
+                                }
+                                else {
+                                    res.json(200, {msg: 'OK'});
+                                }
+                            });
+                }
             });
         }
     }
@@ -204,41 +265,48 @@ router.post('/groupes', function(req, res) {
 router.put('/groupes/:oid', function(req, res) {
     var id = req.params.oid;
     var modificationsGroupe = req.body;
+    preparerReponseJSON(res);
     try {
-        var resultatValidation = schemas.validerGroupe(modificationsGroupe);
+        var resultatValidation = validator.validerGroupe(modificationsGroupe);
 
         if (!resultatValidation.valid) {
             res.json(500, {error: resultatValidation.format()});
         }
         else {
-            mongoDbConnection(function(databaseConnection) {
-                if (mongodb.ObjectID.isValid(id)) {
-                    var criteres = {
-                        _id: mongodb.ObjectID(id)
-                    };
-                    databaseConnection.collection('groupesCours').find(criteres).
-                            toArray(function(err, items) {
-                                if (err) {
-                                    res.json(500, {error: err});
-                                }
-                                else {
-                                    databaseConnection.collection('groupesCours').
-                                            update(
-                                                    {'_id': mongodb.ObjectID(id)},
-                                            {$set: modificationsGroupe},
-                                            function(err, result) {
+            mongoDbConnection(function(databaseConnection, err) {
+                if (err) {
 
-                                                if (err) {
-                                                    res.json(500, {error: err});
-                                                } else {
-                                                    res.json(200, {msg: 'OK',
-                                                        nombreDocumentsAffectesParUpdate:
-                                                                result});
+
+                    res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+                } else {
+                    if (mongodb.ObjectID.isValid(id)) {
+                        var criteres = {
+                            _id: mongodb.ObjectID(id)
+                        };
+                        databaseConnection.collection('groupesCours').find(criteres).
+                                toArray(function(err, items) {
+                                    if (err) {
+                                        res.json(500, {error: err});
+                                    }
+                                    else {
+                                        databaseConnection.collection('groupesCours').
+                                                update(
+                                                        {'_id': mongodb.ObjectID(id)},
+                                                {$set: modificationsGroupe},
+                                                function(err, result) {
+
+                                                    if (err) {
+                                                        res.json(500, {error: err});
+                                                    } else {
+                                                        res.json(200, {msg: 'OK',
+                                                            nombreDocumentsAffectesParUpdate:
+                                                                    result});
+                                                    }
                                                 }
-                                            }
-                                            );
-                                }
-                            });
+                                                );
+                                    }
+                                });
+                    }
                 }
             });
         }
@@ -253,33 +321,40 @@ router.put('/groupes/:oid', function(req, res) {
  */
 router.delete('/groupes/:oid', function(req, res) {
     var id = req.params.oid;
-    mongoDbConnection(function(databaseConnection) {
+    preparerReponseJSON(res);
+    mongoDbConnection(function(databaseConnection, err) {
         if (mongodb.ObjectID.isValid(id)) {
             var criteres = {
                 _id: mongodb.ObjectID(id)
             };
-            databaseConnection.collection('groupesCours').find(criteres).
-                    toArray(function(err, items) {
-                        if (err) {
-                            res.json(500, {error: err});
-                        }
-                        else {
-                            var leGroupe = items[0];
-                            if (groupeAvecEtudiants(leGroupe)) {
-                                res.json(500, {error: "Impossible de suprimmer le groupe-cours." +
-                                            "des étudiants y sont inscrits"});
+            if (err) {
+
+
+                res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+            } else {
+                databaseConnection.collection('groupesCours').find(criteres).
+                        toArray(function(err, items) {
+                            if (err) {
+                                res.json(500, {error: err});
                             }
                             else {
-                                databaseConnection.collection('groupesCours').remove(leGroupe, function(err, res) {
-                                    if (err) {
-                                        res.json(500, {error: err});
-                                    } else
-                                        res.json(200, {msg: "Suppression correcte"});
-                                });
+                                var leGroupe = items[0];
+                                if (groupeAvecEtudiants(leGroupe)) {
+                                    res.json(500, {error: "Impossible de suprimmer le groupe-cours." +
+                                                "des étudiants y sont inscrits"});
+                                }
+                                else {
+                                    databaseConnection.collection('groupesCours').remove(leGroupe, function(err, res) {
+                                        if (err) {
+                                            res.json(500, {error: err});
+                                        } else
+                                            res.json(200, {msg: "Suppression correcte"});
+                                    });
+                                }
                             }
                         }
-                    }
-                    );
+                        );
+            }
         }
 
 
@@ -294,6 +369,9 @@ function etudiantAvecCoursReussi(etd) {
 
 function groupeAvecEtudiants(grp) {
     return grp.listeEtudiants.length > 0;
+}
+function preparerReponseJSON(res) {
+    res.header("Content-Type", "application/json; charset=utf-8");
 }
 
 

@@ -14,7 +14,7 @@ module.exports = function(callback) {
 
     if (instanceMongoDB) {
         console.log("[Singleton] Retour instance MongoDB existante.");
-        callback(instanceMongoDB);
+        callback(instanceMongoDB,null);
         return;
     }
 
@@ -28,12 +28,13 @@ module.exports = function(callback) {
         db.open(function(error, dbConn) {
 
             if (error) {
-                throw new Error(error);
+                callback(null,error);
+                return; 
             }
             console.log("[Singleton] Retour nouvelle instance MongoDB.");
             
             instanceMongoDB = dbConn;
-            callback(instanceMongoDB);
+            callback(instanceMongoDB,null);
         });
     }
 };
