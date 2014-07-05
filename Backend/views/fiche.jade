@@ -1,0 +1,89 @@
+extends layout
+style
+block content
+    ol.breadcrumb
+        li
+            a(href='/') Dossiers
+        li.active #{dossier.codePermanent}
+    #Infos
+    #titre-fiche Dossier
+    #Contenu
+        ul#details-etudiant
+            li#code Code Permanent : #{dossier.codePermanent}
+            li#nom Nom de l'étudiant(e) : #{dossier.nom}
+            li#prenom Prenom de l'étudiant(e) : #{dossier.prenom}
+            li#date Date de naissance de l'étudiant(e) : #{dossier.dateNaissance}
+
+            if dossier.sexe==1
+                li#sexe Sexe l'étudiant(e) : Homme
+            else if dossier.sexe==2
+                    li#sexe Sexe l'étudiant(e) : Femme
+            else
+                li#sexe Sexe l'étudiant(e) : s/o
+
+    table.table.table-hover.table-bordered.cours-margins-def
+        thead
+            tr
+                td(colspan='4') Liste des cours
+            tr
+                td Sigle
+                td Groupe
+                td Session
+                td Note finale
+        each cours in dossier.listeCours
+               if cours.noteFinale >= 60
+                   tr.success
+                       td #{cours.sigle}
+                       td #{cours.groupe}
+                       td #{cours.session}
+                       td #{cours.noteFinale}
+               else
+                   tr.danger
+                       td #{cours.sigle}
+                       td #{cours.groupe}
+                       td #{cours.session}
+                       td #{cours.noteFinale}
+        tfoot
+            tr
+                td(colspan='4') Nombre de cours:
+            tr
+                td Légende
+                td.success Cours réussi
+                td.danger Cours échoué
+                td(colspan='2')
+    button(href='#myModal' class='btn btn-info' data-toggle="modal" data-target="#edition-fiche")  mettre à jour la fiche
+    a(class='btn btn-default' href='/') Retour à la liste des étudiants
+
+    // Modal HTML
+    #edition-fiche.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                    h4.modal-title Édition
+                .modal-body
+                    form.form-horizontal(action='/dossiers/:cp', method='put')
+                        fieldset
+                            // Form Name
+                            legend Dossier
+                            label(for='cp') Code permanent
+                            input#cp(type='text', value='aaaa', disabled='')
+                            br
+                            label(for='nom') Nom
+                            input#nom(type='text', value='aaaa')
+                            br
+                            label(for='prenom') Prenom
+                            input#prenom(type='text', value='aaaa')
+                            br
+                            label(for='sexe') Sexe
+                            select#sexe
+                                option(value='1', selected='') Homme
+                                option(value='2') Femme
+                                option(value='3') S/O
+
+
+                p.text-warning
+                        small If you don't save, your changes will be lost.
+                .modal-footer
+                    button.btn.btn-default(type='button', data-dismiss='modal') Close
+                    button.btn.btn-primary(type='button') Save changes
