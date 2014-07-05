@@ -30,20 +30,43 @@ var mongodb = require('mongodb');
 
 
 var mongoDbConnection = require('./connection.js');
-
+var eDispatcher=require('./error-dispatcher.js');
 
 var router = express.Router();
 var validator = require('./custom-validation.js');
 
+router.get('/',function(req, res) {
+    mongoDbConnection(function(databaseConnection, err) {
+        if (err) {
 
+
+           res.render('error',eDispatcher.BDNonAccessible());
+        }
+        else
+        {
+            databaseConnection.collection('dossiers').find().toArray(function (err,dossiers){
+                   var params={
+                       title:"liste des dossiers",
+                       data:dossiers
+                   }
+                    res.render('index',params);
+            }
+
+        );
+
+        }
+    });
+
+    });
 /**
  * Service - 1 Envoie au client le dossier complet de l'étudiant, en format JSON 
  */
 router.get('/dossiers/:cp', function(req, res) {
-    preparerReponseJSON(res);
+    //preparerReponseJSON(res);
     var leCode = req.params.cp;
     if (!validator.validerCodePermanent(leCode)) {
-        res.json(500, {error: "Code permanent de format incorrect\nFormat correct:AAAA00000000"});
+        res.render('error',eDispatcher.codePermanentInvalide());
+
     }
     else {
 
@@ -52,14 +75,19 @@ router.get('/dossiers/:cp', function(req, res) {
             if (err) {
 
 
-                res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+                res.render('error',eDispatcher.BDNonAccessible());
             } else {
                 var criteres = {
                     codePermanent: leCode
                 };
                 databaseConnection.collection('dossiers').find(criteres).toArray(function(err, items) {
                     var leDossier = items[0];
-                    res.json(leDossier);
+                    var params={
+                        title:"Fiche étudiant:"+leCode,
+                        dossier:leDossier
+                    }
+                    res.render('fiche',params);
+
                 });
             }
         });
@@ -80,13 +108,13 @@ router.post('/dossiers', function(req, res) {
 
         if (!resultatValidation.valid) {
 
-            res.json(500, {error: resultatValidation.format()});
+           res.render('error',eDispatcher.erreurValidationBody(resultatValidation.format()));
         } else {
             mongoDbConnection(function(databaseConnection, err) {
                 if (err) {
 
 
-                    res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+                    res.render('error',eDispatcher.BDNonAccessible());
                 } else {
                     databaseConnection.collection('dossiers').insert(dossier,
                             function(err, result) {

@@ -1,6 +1,9 @@
 extends layout
 
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+  #err(class='alert alert-danger')
+      p=error.status
+      p=message
+  if error.stack
+      pre #{error.stack}
+  button(class='btn btn-info' onclick="history.back(-1)") Retour à la page précédente

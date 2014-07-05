@@ -6,3 +6,26 @@ body {
 a {
   color: #00B7FF;
 }
+/*tr:nth-child(even) {background: red}
+tr:nth-child(odd) {background: deepskyblue}*/
+#titre-fiche{
+
+    font-size: large;
+    margin-top: 10px;
+    width: 60px;
+    margin-bottom: 20px;
+}
+#contenu{
+    display: block;
+    margin-left: 100px;
+    margin-bottom: 30px;
+    width: 400px;
+}
+ul#details-etudiant{
+    list-style-type: none;
+}
+.cours-margins-def{
+    margin-top: 20px;
+    margin-left: 0px;
+    margin-bottom: 30px;
+}
