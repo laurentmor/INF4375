@@ -29,3 +29,27 @@ ul#details-etudiant{
     margin-left: 0px;
     margin-bottom: 30px;
 }
+input[type="text"]{
+    margin-left: 10px;
+
+}
+input[id="#cp"]{
+
+    width: 120px;
+    margin-left: 30px;
+}
+input[id="#nom"]{
+    width: 200px;
+    margin-left: 31px;
+}
+
+input[id="#prenom"]{
+    width: 200px;
+
+}
+input[id="#sexe"] {
+    margin-left: 28px;
+}
+.datepicker{
+ z-index:100000;
+!important;}

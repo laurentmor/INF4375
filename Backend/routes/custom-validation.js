@@ -28,7 +28,7 @@
  * REF des schémas: http://www.jsonschema.net/
  */
 var inspector = require('schema-inspector');
-var regExCp=/([a-zA-Z]{4})\d{8}/;
+var regExCp=/([a-zA-ZÀ-ÿ]{4})\d{8}/;
 var schemaDefinitionDossier = {
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
@@ -44,38 +44,38 @@ var schemaDefinitionDossier = {
         },
         "listeCoursReussis": {
             "type": "array",
-            "required": true,
+            "optional":true,
             "items":
                     {
                         "type": "string",
-                        "required": true
+                        "required": false
                     }
 
 
         },
         "listeCours": {
             "type": "array",
-            "required": true,
+            "optional":true,
             "items":
                     {
                         "type": "object",
-                        "required": true,
+                        "required": false,
                         "properties": {
                             "groupe": {
                                 "type": "string",
-                                "required": true
+                                "required": false
                             },
                             "noteFinale": {
-                                "type": "number",
-                                "required": true
+                                "type": "string",
+                                "required": false
                             },
                             "session": {
                                 "type": "string",
-                                "required": true
+                                "required": false
                             },
                             "sigle": {
                                 "type": "string",
-                                "required": true
+                                "required": false
                             }
                         }
                     }
@@ -151,6 +151,7 @@ var schemaDefinitionGroupeCours = {
 function validerDossier(dossier) {
     console.log("[INFO] Validation du dossier");
     var validation = inspector.validate(schemaDefinitionDossier, dossier);
+    console.log(validation.valid);
 
     return validation;
 }

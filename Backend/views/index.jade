@@ -2,9 +2,12 @@ extends layout
 style
 block content
     h1= title
-    p Welcome to #{title}
 
-        table(class='table table-hover table-bordered')
+        #result.alert
+        table#etudiants(class='table table-hover table-bordered')
+            thead
+                td(colspan=5)
+                    a.navbar-brand(href='#',data-toggle="modal" data-target="#nouveau-dossier") Ajout d'un dossier
             thead
                 td Code permanent
                 td Nom
@@ -18,7 +21,7 @@ block content
                        a(href='/dossiers/'+dossier.codePermanent) #{dossier.codePermanent}
                     td(style='width:15px') #{dossier.nom}
                     td(style='width:15px') #{dossier.prenom}
-                    td(style='width:15px') #{dossier.dateNaissance}
+                    td(style='width:15px')= moment(dossier.dateNaissance).format('Do MMMM YYYY')
                     if dossier.sexe==1
                         td(style='width:15px') Homme
                     else if dossier.sexe==2
@@ -28,4 +31,39 @@ block content
             tfoot
                 td(colspan=5) Nombre de dossiers : #{data.length}
 
+    // Modal HTML
+    #nouveau-dossier.modal.fade
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+                    h4.modal-title Ajouter un dossier
+                .modal-body
+                    form#nouveau-form.form-horizontal
+                        fieldset
 
+                            legend Dossier
+                            label(for='cp') Code permanent
+                            input#form-cp(type='text', value='' placeholder='ex: BERTM01017801', required,name="CP" )
+                            br
+                            label(for='nom') Nom
+                            input#form-nom(type='text', placeholder='ex: Bertrand',required,name="nom")
+                            br
+                            label(for='prenom') Prenom
+                            input#form-prenom(type='text', placeholder='ex: Mathieu', required,name="prenom")
+                            br
+                            label(for='sexe') Sexe
+                                          select#form-sexe(required,name="sexe")
+                                            option(value='') Choisir
+                                            option(value='1' ) Homme
+                                            option(value='2',) Femme
+                                            option(value='3') S/O
+                            br
+                            label(for="dateNaissance") Date de naissance
+                                input#form-dateNaissance(type='text',required,name="date")
+
+                p.text-warning
+                    small Si n'enregitrez pas vos changements, ils seront perdus
+                .modal-footer
+                    button#close.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                    button#nouveau.btn.btn-primary(type='button',data-dismiss='modal') Enregitrer le nouvel étudiant

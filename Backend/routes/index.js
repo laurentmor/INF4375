@@ -44,7 +44,7 @@ router.get('/',function(req, res) {
         }
         else
         {
-            databaseConnection.collection('dossiers').find().toArray(function (err,dossiers){
+            databaseConnection.collection('dossiers').find().sort({codePermanent:1}).toArray(function (err,dossiers){
                    var params={
                        title:"liste des dossiers",
                        data:dossiers
@@ -62,7 +62,7 @@ router.get('/',function(req, res) {
  * Service - 1 Envoie au client le dossier complet de l'étudiant, en format JSON 
  */
 router.get('/dossiers/:cp', function(req, res) {
-    //preparerReponseJSON(res);
+    preparerReponseHTML(res);
     var leCode = req.params.cp;
     if (!validator.validerCodePermanent(leCode)) {
         res.render('error',eDispatcher.codePermanentInvalide());
@@ -102,8 +102,9 @@ router.get('/dossiers/:cp', function(req, res) {
  * et crée le dossier*/
 router.post('/dossiers', function(req, res) {
     var dossier = req.body;
-    preparerReponseJSON(res);
+     console.log(req.body.cp);
     try {
+
         var resultatValidation = validator.validerDossier(dossier);
 
         if (!resultatValidation.valid) {
@@ -119,10 +120,10 @@ router.post('/dossiers', function(req, res) {
                     databaseConnection.collection('dossiers').insert(dossier,
                             function(err, result) {
                                 if (err) {
-                                    res.json(500, {error: err});
+                                    res.render('error',eDispatcher.erreurValidationBody(resultatValidation.format()));
                                 }
                                 else {
-                                    res.json(200, {msg: 'OK'});
+
                                 }
                             });
                 }
@@ -130,7 +131,7 @@ router.post('/dossiers', function(req, res) {
         }
     }
     catch (e) {
-        res.json(500, {error: e});
+        res.render('error',eDispatcher.erreurValidationBody(resultatValidation.format()));
     }
 });
 /**
@@ -151,6 +152,7 @@ router.put('/dossiers/:cp', function(req, res) {
             var resultatValidation = validator.validerDossier(modificationsDossier);
 
             if (!resultatValidation.valid) {
+                console.log("v");
                 res.json(500, {error: resultatValidation.format()});
             }
 
@@ -163,7 +165,7 @@ router.put('/dossiers/:cp', function(req, res) {
                     } else {
 
                         databaseConnection.collection('dossiers').update(
-                                {'codePermanent': codePermanent},
+                                {'codePermanent': leCode},
                         {$set: modificationsDossier},
                         function(err, result) {
 
@@ -400,6 +402,9 @@ function groupeAvecEtudiants(grp) {
 }
 function preparerReponseJSON(res) {
     res.header("Content-Type", "application/json; charset=utf-8");
+}
+function preparerReponseHTML(res) {
+    res.header("Content-Type", "text/html; charset=utf-8");
 }
 
 
