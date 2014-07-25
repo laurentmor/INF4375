@@ -37,6 +37,7 @@ var schemaDefinitionDossier = {
         "codePermanent": {
             "type": "string",
             "required": true
+
         },
         "dateNaissance": {
             "type": "string",
@@ -151,7 +152,6 @@ var schemaDefinitionGroupeCours = {
 function validerDossier(dossier) {
     console.log("[INFO] Validation du dossier");
     var validation = inspector.validate(schemaDefinitionDossier, dossier);
-    console.log(validation.valid);
 
     return validation;
 }
@@ -163,6 +163,8 @@ function validerGroupe(groupe) {
     return validation;
 }
 function validerCodePermanent(code){
+
+
     return regExCp.test(code);
 }
 exports.validerDossier = validerDossier;

@@ -102,36 +102,43 @@ router.get('/dossiers/:cp', function(req, res) {
  * et crée le dossier*/
 router.post('/dossiers', function(req, res) {
     var dossier = req.body;
-     console.log(req.body.cp);
-    try {
 
-        var resultatValidation = validator.validerDossier(dossier);
-
-        if (!resultatValidation.valid) {
-
-           res.render('error',eDispatcher.erreurValidationBody(resultatValidation.format()));
-        } else {
-            mongoDbConnection(function(databaseConnection, err) {
-                if (err) {
+    if (validator.validerCodePermanent(req.body.codePermanent)==false) {
+        req.body=null;
+        res.json(500, {error: " Ajout impossible - Code permanent de format incorrect Format correct:AAAA00000000"});
+    }
+    else {
+        try {
 
 
-                    res.render('error',eDispatcher.BDNonAccessible());
-                } else {
-                    databaseConnection.collection('dossiers').insert(dossier,
-                            function(err, result) {
+                var resultatValidation = validator.validerDossier(dossier);
+
+            if (!resultatValidation.valid) {
+
+                res.json(500, eDispatcher.erreurValidationBody(resultatValidation.format()));
+            } else {
+                mongoDbConnection(function (databaseConnection, err) {
+                    if (err) {
+
+
+                        res.render('error', eDispatcher.BDNonAccessible());
+                    } else {
+                        databaseConnection.collection('dossiers').insert(dossier,
+                            function (err, result) {
                                 if (err) {
-                                    res.render('error',eDispatcher.erreurValidationBody(resultatValidation.format()));
+                                    res.json(500, {error:eDispatcher.erreurValidationBody(resultatValidation.format())});
                                 }
                                 else {
-
+                                    res.json(200,{message:"Étudiant ajouté avec succès"});
                                 }
                             });
-                }
-            });
+                    }
+                });
+            }
         }
-    }
-    catch (e) {
-        res.render('error',eDispatcher.erreurValidationBody(resultatValidation.format()));
+        catch (e) {
+            res.json(500, {error:eDispatcher.erreurValidationBody(resultatValidation.format())});
+        }
     }
 });
 /**
@@ -152,7 +159,7 @@ router.put('/dossiers/:cp', function(req, res) {
             var resultatValidation = validator.validerDossier(modificationsDossier);
 
             if (!resultatValidation.valid) {
-                console.log("v");
+
                 res.json(500, {error: resultatValidation.format()});
             }
 
@@ -172,7 +179,7 @@ router.put('/dossiers/:cp', function(req, res) {
                             if (err) {
                                 res.json(500, {error: err});
                             } else {
-                                res.json(200, {msg: 'OK', nombreDocumentsAffectesParUpdate: result});
+                                res.json(200, {message: 'Mise à jour effectuée correctement'});
                             }
                         });
                     }
@@ -187,11 +194,11 @@ router.put('/dossiers/:cp', function(req, res) {
 /**Service - 4 Supprime le dossier de l'étudiant.
  * Il est impossible de supprimer un dossier si 
  * l'étudiant a déjà complété un cours avec succès.*/
-router.delete('/dossiers/:cp', function(req, res) {
-    preparerReponseJSON(res);
+router.delete('/dossiers/:cp', function(req, response) {
+    //preparerReponseJSON(res);
     var leCode = req.params.cp;
     if (!validator.validerCodePermanent(leCode)) {
-        res.json(500, {error: "Code permanent de format incorrect\nFormat correct:AAAA00000000"});
+        response.json(500, {error: "Code permanent de format incorrect\nFormat correct:AAAA00000000"});
     }
     else {
         mongoDbConnection(function(databaseConnection, err) {
@@ -202,21 +209,20 @@ router.delete('/dossiers/:cp', function(req, res) {
             if (err) {
 
 
-                res.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
+                response.json(500, {error: "Impossible de se connecter à la BD. Service mongod démarré?"});
             } else {
                 databaseConnection.collection('dossiers').find(criteres).toArray(function(err, items) {
                     leDossier = items[0];
                     if (etudiantAvecCoursReussi(leDossier)) {
-                        res.json(500, {error: "Impossible de suprimmer le dossier." +
+                        response.json(500, {error: "Impossible de suprimmer le dossier." +
                                     "l'étudiant a déjà réussi un cours"});
 
                     }
                     else {
-                        databaseConnection.collection('dossiers').remove(leDossier, function(err, res) {
+                        databaseConnection.collection('dossiers').remove(leDossier, function(err, result) {
                             if (err) {
-                                res.json(500, {error: err});
-                            } else
-                                res.json(200, {msg: "Suppression correcte"});
+                                response.json(500, {result: err});
+                            } else response.json(200, {msg: "Suppression correcte"});
                         });
                     }
 

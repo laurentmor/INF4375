@@ -2,6 +2,7 @@ extends layout
 style
 
 block content
+    #result.alert
     ol.breadcrumb
         li
             a(href='/') Dossiers
@@ -9,7 +10,7 @@ block content
     #Infos
         #titre-fiche Dossier
         #contenu
-            #result.alert
+
             ul#details-etudiant
                 li#code Code Permanent :
                     span#code-valeur #{dossier.codePermanent}
@@ -60,7 +61,7 @@ block content
                     td(colspan='2')
         button(href='#myModal' class='btn btn-info' data-toggle="modal" data-target="#edition-fiche")  mettre à jour le dossier
         button#delete.btn.btn-danger(type="button") Supprimer l'étudiant(e)
-        button#retour.btn.btn-default(type="button", href='/')  Retour à la liste des étudiants
+        a#retour.btn.btn-default(type="button", href='/')  Retour à la liste des étudiants
 
 
         // Modal HTML
@@ -71,35 +72,38 @@ block content
                         button.close.close-edit(type='button', data-dismiss='modal', aria-hidden='true') ×
                         h4.modal-title Mise à jour
                     .modal-body
-                        #result.alert.alert-info Les changements sont sauvegardés automatiquement.
+                        #resultModal.alert.alert-info Les changements sont sauvegardés automatiquement.
                         form#editionDossier.form-horizontal
                             fieldset
                                 // Form Name
                                 legend Dossier
                                 label(for='cp') Code permanent
-                                input.edit#form-cp(type='text', value='#{dossier.codePermanent}')
+                                input.edit#form-cp(type='text', value='#{dossier.codePermanent}',required, name='CP')
                                 br
                                 label(for='nom') Nom
-                                input.edit#form-nom(type='text', value='#{dossier.nom}')
+                                input.edit#form-nom(type='text', value='#{dossier.nom}',required, name='nom')
                                 br
                                 label(for='prenom') Prenom
-                                input.edit#form-prenom(type='text', value='#{dossier.prenom}')
+                                input.edit#form-prenom(type='text', value='#{dossier.prenom}',required, name='prenom')
                                 br
                                 label(for='sexe') Sexe
                                    if dossier.sexe==1
-                                       select.edit#form-sexe
+                                       select.edit#form-sexe(required,name='sexe')
+                                        option#0(value='') Choisir...
                                         option#1(value='1', selected="true") Homme
                                         option#2(value='2',) Femme
                                         option#3(value='3') S/O
 
                                     else if dossier.sexe==2
-                                            select.edit#form-sexe
+                                        select.edit#form-sexe(required,name='sexe')
+                                                option#0(value='') Choisir...
                                                 option#1(value='1' ) Homme
                                                 option#2(value='2',selected="true") Femme
                                                 option#3(value='3') S/O
                                     else
 
-                                        select.edit#form-sexe
+                                        select.edit#form-sexe(required,name='sexe')
+                                            option#0(value='') Choisir...
                                             option#1(value='1') Homme
                                             option#2(value='2',) Femme
                                             option#3(value='3',selected="true") S/O

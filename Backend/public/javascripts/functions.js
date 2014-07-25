@@ -4,19 +4,15 @@
 var dataUpdated = false;
 var dataAdded=false;
 var updatedFieldID;
+var displayInModal=false;
 $(document).ready(function () {
     gererEdition();
     gereDelete();
     gereNouveau();
     gererPicker();
-    gererRetour();
 
 });
-function gererRetour(){
-    jQuery('#retour').on('click',function(){
-        refreshHomePage();
-    });
-}
+
 function gereDelete(){
     jQuery('#delete').on('click',function(){
      remove();
@@ -34,6 +30,7 @@ function gereNouveau(){
         var form = $( "#nouveau-form" );
         form.validate();
         if(form.valid())add();
+
     });
 
 
@@ -65,21 +62,27 @@ function gererEdition() {
 
 }
 function reset() {
-    var element = document.getElementById("result");
+    var element = document.getElementById("resultModal");
 
-    if (jQuery("#result").hasClass("alert-success")) {
-        jQuery("#result").removeClass("alert-success");
+    if (jQuery("#resultModal").hasClass("alert-success")) {
+        jQuery("#resultModal").removeClass("alert-success");
         //noinspection JSJQueryEfficiency
-        jQuery("#result").addClass("alert-info");
+        jQuery("#resultModal").addClass("alert-info");
+        //Petit FIX pour corriger un bug d'ajout de class sur un div (non-modal) sans infos au moment du reset
+        jQuery("#result").removeClass("alert-success");
     }
-    else if (jQuery("#result").hasClass("alert-danger")) {
+    else if (jQuery("#resultModal").hasClass("alert-danger")) {
+        jQuery("#resultModal").removeClass("alert-danger");
+        jQuery("#resultModal").addClass("alert-info");
         jQuery("#result").removeClass("alert-danger");
-        jQuery("#result").addClass("alert-info");
     }
     element.innerHTML = "Les changements sont sauvegardés automatiquement.";
+    displayInModal=false;
+
 }
 function update() {
     var objectToUpdate = buildObject();
+    displayInModal=true;
     updateToServer(objectToUpdate, displayResult);
 }
 function remove(){
@@ -95,7 +98,6 @@ function add(){
     result.sexe = document.getElementById("form-sexe").value;
 
     postToServer(result,displayResult);
-    if(dataAdded) refreshHomePage();
 
 }
 
@@ -125,28 +127,41 @@ function buildObject() {
     return result;
 }
 
-function displayResult(optype,status) {
-    var element = document.getElementById("result");
-    var message;
-    if(optype=="Suppression"){
-        if(status==500)message=optype+" impossible l'étudiant(e) a déjà réussi un cours et ne peut pas être supprimé(e)";
-        $("#result").addClass("alert-danger");
+function displayResult(status,message) {
+    var element;
+    if(displayInModal==true){
+        element = document.getElementById("resultModal");
+        if (status == 200) {
 
+            $("#resultModal").removeClass("alert-info").addClass("alert-success");
+            element.innerHTML=message;
+
+        }
+        else {
+
+
+            $("#resultModal").addClass("alert-danger");
+            element.innerHTML =message;
+
+
+        }
     }
     else{
-
+        element = document.getElementById("result");
+    }
     if (status == 200) {
-        $("#result").removeClass("alert-info").addClass("alert-success");
-         message="Opération "+optype+" effectuée correctement";
 
+        $("#result").addClass("alert-success");
+        element.innerHTML=message;
 
     }
     else {
-        $("#result").removeClass("alert-info").addClass("alert-danger");
-        message = "Opération "+optype+" Impossible, vérifiez vos données";
+
+        $("#result").addClass("alert-danger");
+        element.innerHTML =message;
+
+
     }
-   }
-    element.innerHTML = message;
 }
 
 function refreshEditPage() {
@@ -175,7 +190,7 @@ function refreshHomePage() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var res = $.parseXML(xhr.responseText);
-            var infoToRefreshID="contenu";
+            var infoToRefreshID="etudiants";
 
             document.getElementById(infoToRefreshID).innerHTML = res.getElementById(infoToRefreshID).innerHTML;
 
@@ -193,11 +208,12 @@ function updateToServer(updateObject, callback) {
     var cp = document.getElementById("form-cp").value;
     xhr.open("PUT", "/dossiers/" + cp, true);
     xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            callback("Mise à jour",xhr.status);
+        if (xhr.readyState <= 4 && xhr.status === 200) {
+            callback(200,JSON.parse(xhr.responseText).message);
         }
         else {
-            callback("Mise à jour",xhr.status);
+
+            callback(500,JSON.parse(xhr.responseText).error);
         }
     };
     var jsonData = JSON.stringify(updateObject);
@@ -210,11 +226,12 @@ function deleteOnServer(callback) {
     xhr.open("DELETE", "/dossiers/" + cp, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            callback("Suppression",xhr.status);
+            callback(200,JSON.parse(xhr.responseText).message);
 
         }
         else {
-            callback("Suppression",xhr.status);
+
+            callback(500,JSON.parse(xhr.responseText).error);
         }
     };
 
@@ -222,18 +239,40 @@ function deleteOnServer(callback) {
 }
 function postToServer(data, callback) {
     var xhr = new XMLHttpRequest();
-    var cp = document.getElementById("form-cp").value;
-    xhr.open("POST", "/dossiers/", true);
+
+    xhr.open("POST", "/dossiers", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            callback("Ajout",xhr.status);
+            var  retour=JSON.parse(xhr.responseText);
+            callback(200,retour.message);
             dataAdded=true;
+
+            setTimeout(resetMessages(),5000);
+            refreshHomePage();
+
         }
         else {
-            callback("Ajout",xhr.status);
+            var  retour=JSON.parse(xhr.responseText);
+            console.log(retour);
+
+            callback(500,retour.error);
+            setTimeout(resetMessages(),5000);
+
         }
     };
+
     var jsonData = JSON.stringify(data);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(jsonData);
+}
+function resetMessages(){
+    if($("#result").hasClass("alert-danger")){
+        $("#result").removeClass("alert-danger");
+    }
+    else if($("#result").hasClass("alert-success")){
+        $("#result").removeClass("alert-success");
+
+    }
+    var element = document.getElementById("result");
+    element.innerHTML="";
 }

@@ -1,10 +1,11 @@
 extends layout
 style
 block content
-    h1= title
+    #result.alert
 
-        #result.alert
-        table#etudiants(class='table table-hover table-bordered')
+
+
+    table#etudiants(class='table table-hover table-bordered')
             thead
                 td(colspan=5)
                     a.navbar-brand(href='#',data-toggle="modal" data-target="#nouveau-dossier") Ajout d'un dossier
@@ -39,7 +40,7 @@ block content
                     button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
                     h4.modal-title Ajouter un dossier
                 .modal-body
-                    form#nouveau-form.form-horizontal
+                    form#nouveau-form.form-horizontal(action="/dossier",method="POST")
                         fieldset
 
                             legend Dossier
@@ -66,4 +67,4 @@ block content
                     small Si n'enregitrez pas vos changements, ils seront perdus
                 .modal-footer
                     button#close.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                    button#nouveau.btn.btn-primary(type='button',data-dismiss='modal') Enregitrer le nouvel étudiant
+                    button#nouveau.btn.btn-primary(type='submit',data-dismiss='modal') Enregitrer le nouvel étudiant
