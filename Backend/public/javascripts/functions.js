@@ -247,16 +247,15 @@ function postToServer(data, callback) {
             callback(200,retour.message);
             dataAdded=true;
 
-            setTimeout(resetMessages(),5000);
+            //setTimeout(resetMessages(),5000);
             refreshHomePage();
 
         }
         else {
+            //BUG:Uncaught SyntaxError: Unexpected end of input
             var  retour=JSON.parse(xhr.responseText);
-            console.log(retour);
-
             callback(500,retour.error);
-            setTimeout(resetMessages(),5000);
+            //setTimeout(resetMessages(),5000);
 
         }
     };
